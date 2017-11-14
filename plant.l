@@ -7,19 +7,23 @@
 
 using namespace std;
 
+int ContadorLlaves;
+
 void EscribirFileaux(const string &una_cadena);
 void quitarEspacios(string &cadena);
 void manejarGlobal(string &cadena);
 void manejarLocal(string &cadena);
 void ponerEspacios(string &cadena);
+void meterTabuladores(string &cadena);
 %}
 
 /*ALIAS*/
 
+%s LOCAL
+
 TIPOS		"char"|"char16_t"|"char32_t"|"wchar_t"|"signedchar"|"signedshortint"|"int"|"signedint"|"signedlongint"|"signedlonglongint"|"unsignedchar"|"unsignedshortint"|"unsignedint"|"unsignedlongint"|"unsignedlonglongint"|"float"|"double"|"longdouble"|"bool"|"void"|"decltype(nullptr)"|"long"|"short"|"signed"|"unsigned"
-LOCALES		\{{TIPOS}" "*[A-Za-z0-9_, ]*;
-GLOBALES	((" ")|"\n")*{TIPOS}" "*[A-Za-z0-9_, ]*;
-MAIN		((" ")|"\n")*{TIPOS}" "*"main"" "*\(.*\)" "*\{
+VARIABLES	((" ")|"\n")*{TIPOS}" "*[A-Za-z0-9_, ]*;
+MAIN		((" ")|"\n")*{TIPOS}" "*"main"" "*\(.*\)" "*
 PRESERVADAS	"alignas"|"alignof"|"and"|"and_eq"|"asm"|"atomic_cancel"|"atomic_commit"|"atomic_noexcept"|"auto"|"bitand"|"bitor"|"break"|"case"|"catch"|"class"|"compl"|"concept"|"const"|"constexpr"|"const_cast"|"continue"|"co_await"|"co_return"|"co_yield"|"decltype"|"default"|"delete"|"do"|"double"|"dynamic_cast"|"else"|"enum"|"explicit"|"export"|"extern"|"false"|"for"|"friend"|"goto"|"if"|"import"|"inline"|"module"|"mutable"|"namespace"|"new"|"noexcept"|"not"|"not_eq"|"nullptr"|"operator"|"or"|"or_eq"|"private"|"protected"|"public"|"register"|"reinterpret_cast"|"requires"|"return"|"sizeof"|"static"|"static_assert"|"static_cast"|"struct"|"switch"|"synchronized"|"template"|"this"|"thread_local"|"throw"|"true"|"try"|"typedef"|"typeid"|"typename"|"union"|"using"|"virtual"|"void"|"volatile"|"while"|"xor"|"xor_eq"
 
 
@@ -43,13 +47,15 @@ printf("%s\n", yytext);
 
 %%
 
-\n(\n)+								{ EscribirFileaux("\n"); }
-(\n|" ")*"#ifdef "[A-Za-z0-9_ ]*					{ string meter = yytext; quitarEspacios(meter); EscribirFileaux(meter); }
+(\n|" ")*							{ EscribirFileaux(""); }
+"#ifdef "[A-Za-z0-9_ ]*					{ string meter = yytext; quitarEspacios(meter); EscribirFileaux(meter); }
 "#endif"							{ EscribirFileaux("\n#endif\n"); }
 "#include "(" ")*.*					{ string meter = yytext; quitarEspacios(meter); meter.insert(meter.begin(), '\n'); EscribirFileaux(meter); }
-{LOCALES}			{ string meter = yytext; manejarLocal(meter); meter.insert(meter.begin(), '\n'); EscribirFileaux(meter); }
-{GLOBALES}			{ string meter = yytext; manejarGlobal(meter); meter.insert(meter.begin(), '\n'); EscribirFileaux(meter); }
-{MAIN}				{ string meter = yytext; quitarEspacios(meter); meter.insert(meter.begin(), '\n'); EscribirFileaux(meter); }
+\{									{ ContadorLlaves++; BEGIN LOCAL; }
+\}									{ ContadorLlaves--; string meter = "\n"; meterTabuladores(meter); meter += "}\n"; EscribirFileaux(meter); if(ContadorLlaves == 0) BEGIN INITIAL; }
+<LOCAL>({VARIABLES})				{ string meter = yytext; manejarLocal(meter); meter.insert(meter.begin(), '\n'); EscribirFileaux(meter); }
+{VARIABLES}							{ string meter = yytext; manejarGlobal(meter); meter.insert(meter.begin(), '\n'); EscribirFileaux(meter); }
+{MAIN}				{ string meter = yytext; quitarEspacios(meter); meter.insert(meter.begin(), '\n'); meter += " {"; EscribirFileaux(meter); }
 .   								{ printf(" "); }
 
 %%
@@ -62,6 +68,8 @@ int main(int argc, char *argv[]){
 			exit(-1);
 		}
 	}else yyin= stdin;
+
+ContadorLlaves = 0;
 
 yylex();
 
@@ -97,6 +105,13 @@ void manejarGlobal(string &cadena) {
 	for(int i = 1; i < cadena.size(); i++) {
 		if(cadena[i - 1] == ' ')
 			cadena[i] = toupper(cadena[i]);
+		else if(cadena[i - 1] == '_') {
+			cadena[i] = toupper(cadena[i]);
+			cadena.erase(cadena.begin() + i - 1);
+		}
+		else
+			cadena[i] = tolower(cadena[i]);
+
 	}
 }
 
@@ -105,8 +120,7 @@ void manejarLocal(string &cadena) {
 	ponerEspacios(cadena);
 
 	for(int i = 1; i < cadena.size(); i++) {
-		if(cadena[i - 1] == ' ')
-			cadena[i] = tolower(cadena[i]);
+		cadena[i] = tolower(cadena[i]);
 	}
 }
 
@@ -115,4 +129,9 @@ void ponerEspacios(string &cadena) {
 		if(cadena[i - 1] == ',' && cadena[i] != ' ')
 			cadena.insert(cadena.begin() + i, ' ');
 	}
+}
+
+void meterTabuladores(string &cadena) {
+	for(int i = 0; i < ContadorLlaves; i++)
+		cadena += "\t";
 }

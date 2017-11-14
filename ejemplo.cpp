@@ -15,7 +15,25 @@
 int Valor,valor2,valor3;
 int valor1;
 
-int main(){int       A;
+void a() {
+    int           J;
+
+
+
+
+    if(1){
+        int b,c,e,F;
+
+    }
+
+    int h;
+}
+
+int asda, ASAD, dsads,sa;
+
+bool aaaa_aaaa_ccc;
+
+int main(){int A;
 int b;
 
     printf("Prueba\n");

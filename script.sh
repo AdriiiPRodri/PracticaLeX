@@ -9,6 +9,6 @@ g++ -o prueba lex.yy.c -ll
 
 ./prueba ejemplo.cpp
 
-clear
+#clear
 
 cat aux
