@@ -15,26 +15,23 @@
 int Valor,valor2,valor3;
 int valor1;
 
-void a() {
-    int           J;
+void a(){int           J;
 
 
 
 
-    if(1){
-        int b,c,e,F;
+    if(1){int b,c,e,F;
 
     }
-
-    int h;
+                          int h;
 }
 
 int asda, ASAD, dsads,sa;
 
 bool aaaa_aaaa_ccc;
 
-int main(){int A;
-int b;
+int main(){
+                                            int A;
 
     printf("Prueba\n");
     return 0;

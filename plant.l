@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <fstream>
 #include <string>
+#include <iostream>
 
 using namespace std;
 
@@ -47,16 +48,15 @@ printf("%s\n", yytext);
 
 %%
 
-(\n|" ")*							{ EscribirFileaux(""); }
-"#ifdef "[A-Za-z0-9_ ]*					{ string meter = yytext; quitarEspacios(meter); EscribirFileaux(meter); }
-"#endif"							{ EscribirFileaux("\n#endif\n"); }
-"#include "(" ")*.*					{ string meter = yytext; quitarEspacios(meter); meter.insert(meter.begin(), '\n'); EscribirFileaux(meter); }
-\{									{ ContadorLlaves++; BEGIN LOCAL; }
-\}									{ ContadorLlaves--; string meter = "\n"; meterTabuladores(meter); meter += "}\n"; EscribirFileaux(meter); if(ContadorLlaves == 0) BEGIN INITIAL; }
-<LOCAL>({VARIABLES})				{ string meter = yytext; manejarLocal(meter); meter.insert(meter.begin(), '\n'); EscribirFileaux(meter); }
-{VARIABLES}							{ string meter = yytext; manejarGlobal(meter); meter.insert(meter.begin(), '\n'); EscribirFileaux(meter); }
-{MAIN}				{ string meter = yytext; quitarEspacios(meter); meter.insert(meter.begin(), '\n'); meter += " {"; EscribirFileaux(meter); }
-.   								{ printf(" "); }
+"#ifdef "[A-Za-z0-9_ ]*		{ string meter = yytext; quitarEspacios(meter); EscribirFileaux(meter); }
+"#endif"					{ EscribirFileaux("\n#endif\n"); }
+"#include "(" ")*.*			{ string meter = yytext; quitarEspacios(meter); meter.insert(meter.begin(), '\n'); EscribirFileaux(meter); }
+\{							{ ContadorLlaves++; BEGIN LOCAL; }
+\}							{ ContadorLlaves--; string meter = "\n"; meterTabuladores(meter); meter += "}\n"; EscribirFileaux(meter); if(ContadorLlaves == 0) BEGIN INITIAL; }
+<LOCAL>({VARIABLES})		{ string meter = yytext; manejarLocal(meter); meter.insert(meter.begin(), '\n'); meterTabuladores(meter); EscribirFileaux(meter); }
+{VARIABLES}					{ string meter = yytext; manejarGlobal(meter); meter.insert(meter.begin(), '\n'); EscribirFileaux(meter); }
+{MAIN}						{ string meter = yytext; quitarEspacios(meter); meter.insert(meter.begin(), '\n'); meter += " {"; EscribirFileaux(meter); }
+.   						{ printf(" "); }
 
 %%
 
@@ -85,11 +85,15 @@ void EscribirFileaux(const string &una_cadena) {
 
 void quitarEspacios(string &cadena) {
 	string aux;
+	bool llegar = false;
 
 	for(int i = 0; i < cadena.size() - 1; i++) {
-		if(cadena[i] != ' ' || cadena[i + 1] != ' ')
-			if(cadena[i] != '\n')
-				aux += cadena[i];
+		if(!llegar && cadena[i] != ' ' && cadena[i] != '\n' && cadena[i] != '\t')
+			llegar = true;
+
+		if(llegar && (cadena[i] != ' ' || cadena[i + 1] != ' '))
+			if(cadena[i] != '\n' && cadena[i] != '\t')
+				aux.push_back(cadena[i]);
 	}
 
 	if(cadena[cadena.size() - 1] != ' ')
@@ -118,8 +122,9 @@ void manejarGlobal(string &cadena) {
 void manejarLocal(string &cadena) {
 	quitarEspacios(cadena);
 	ponerEspacios(cadena);
+	meterTabuladores(cadena);
 
-	for(int i = 1; i < cadena.size(); i++) {
+	for(int i = 0; i < cadena.size(); i++) {
 		cadena[i] = tolower(cadena[i]);
 	}
 }
@@ -132,6 +137,7 @@ void ponerEspacios(string &cadena) {
 }
 
 void meterTabuladores(string &cadena) {
+	cout << '\n' << ContadorLlaves << endl;
 	for(int i = 0; i < ContadorLlaves; i++)
-		cadena += "\t";
+		cadena.insert(cadena.begin(), '\t');
 }
