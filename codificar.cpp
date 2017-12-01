@@ -24,7 +24,7 @@ bool Ocultar(unsigned char imagen[], const char mensaje[]){
          /*bucle para recorrer cada uno de los bits del byte i del mensaje y tambien aumenta en cada vuelta el indice k(indice de la imagen)*/
         for(int j=0; j<8; j++, k++){
             bit_mensaje = mensaje[i] & comp_bit_men;    //guarda el bit de la posicion que indica comp_bit_men del byte i del mensaje
-            bit_imagen = imagen[k] & COMP_BIT_IMG;  //guarda el bit menos significativo del byte k de la imagen
+            bit_imagen = imagen[k] & COMP_BIT_IMG;      //guarda el bit menos significativo del byte k de la imagen
 
             if(bit_imagen != bit_mensaje){  // cambiamos el bit del byte k de la imagen en caso de que no sean iguales
                 if(!bit_imagen)
@@ -100,4 +100,3 @@ bool Revelar(const unsigned char imagen[], char mensaje[]){
 
     return byte_cero;
 }
-

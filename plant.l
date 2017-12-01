@@ -23,16 +23,20 @@ void quitarEPrimeroUltimo(string & cadena);
 /*ALIAS*/
 
 %s LOCAL
+%s SIN_LLAVES
 
-NOMBRES				[A-Za-z_*&0-9 ,\\"'=\[\]]*
+NOMBRES				[A-Za-z0-9 ,.\\"'=\[\];\+-<>!&|\^%\/*_]*
 TIPOS				"char"|"char16_t"|"char32_t"|"wchar_t"|"signedchar"|"signedshortint"|"int"|"signedint"|"signedlongint"|"signedlonglongint"|"unsignedchar"|"unsignedshortint"|"unsignedint"|"unsignedlongint"|"unsignedlonglongint"|"float"|"double"|"longdouble"|"bool"|"void"|"decltype(nullptr)"|"long"|"short"|"signed"|"unsigned"
 VARIABLES			((" ")|"\n")*"const"?((" ")|"\n")*{TIPOS}+((" ")|"\n")+{NOMBRES}((" ")|"\n")*;
+VALOR_VARIABLES		((" ")|"\n")*{NOMBRES}((" ")|"\n")*=((" ")|"\n")*{NOMBRES}((" ")|"\n")*;
 FUNCIONES			((" ")|"\n")*{TIPOS}+((" ")|"\n")+{NOMBRES}((" ")|"\n")*\({NOMBRES}\)((" ")|"\n")*
 OTRAS_FUNCIONES		((" ")|"\n")+{NOMBRES}((" ")|"\n")*\({NOMBRES}\)((" ")|"\n")*;
 BUCLES				((" ")|"\n")*{PRESERVADAS}((" ")|"\n")*\({NOMBRES}\)((" ")|"\n")*
-CASOS_ESPECIALES	((" ")|"\n")*{PRESERVADAS}((" ")|"\n")*{NOMBRES}[;|:]
+ELSE				((" ")|"\n")*"else"((" ")|"\n")*
+BUCLE_FOR			((" ")|"\n")*"for"((" ")|"\n")*\(((" ")|"\n")*{NOMBRES}((" ")|"\n")*\)((" ")|"\n")*
+CASOS_ESPECIALES	((" ")|"\n")*{PRESERVADAS}*((" ")|"\n")*{NOMBRES}[;|:]
 COMENTARIOS			((" ")|"\n")*(\/\/|\/\*)((" ")|"\n")*[^\n]*
-PRESERVADAS	"alignas"|"alignof"|"and"|"and_eq"|"asm"|"atomic_cancel"|"atomic_commit"|"atomic_noexcept"|"auto"|"bitand"|"bitor"|"break"|"case"|"catch"|"class"|"compl"|"concept"|"const"|"constexpr"|"const_cast"|"continue"|"co_await"|"co_return"|"co_yield"|"decltype"|"default"|"delete"|"do"|"double"|"dynamic_cast"|"else"|"enum"|"explicit"|"export"|"extern"|"false"|"for"|"friend"|"goto"|"if"|"import"|"inline"|"module"|"mutable"|"namespace"|"new"|"noexcept"|"not"|"not_eq"|"nullptr"|"operator"|"or"|"or_eq"|"private"|"protected"|"public"|"register"|"reinterpret_cast"|"requires"|"return"|"sizeof"|"static"|"static_assert"|"static_cast"|"struct"|"switch"|"synchronized"|"template"|"this"|"thread_local"|"throw"|"true"|"try"|"typedef"|"typeid"|"typename"|"union"|"using"|"virtual"|"void"|"volatile"|"while"|"xor"|"xor_eq"
+PRESERVADAS	"alignas"|"alignof"|"and"|"and_eq"|"asm"|"atomic_cancel"|"atomic_commit"|"atomic_noexcept"|"auto"|"bitand"|"bitor"|"break"|"case"|"catch"|"class"|"compl"|"concept"|"const"|"constexpr"|"const_cast"|"continue"|"co_await"|"co_return"|"co_yield"|"decltype"|"default"|"delete"|"do"|"double"|"dynamic_cast"|"enum"|"explicit"|"export"|"extern"|"false"|"for"|"friend"|"goto"|"if"|"import"|"inline"|"module"|"mutable"|"namespace"|"new"|"noexcept"|"not"|"not_eq"|"nullptr"|"operator"|"or"|"or_eq"|"private"|"protected"|"public"|"register"|"reinterpret_cast"|"requires"|"return"|"sizeof"|"static"|"static_assert"|"static_cast"|"struct"|"switch"|"synchronized"|"template"|"this"|"thread_local"|"throw"|"true"|"try"|"typedef"|"typeid"|"typename"|"union"|"using"|"virtual"|"void"|"volatile"|"while"|"xor"|"xor_eq"
 
 
 /*REGLAS*/
@@ -44,12 +48,16 @@ PRESERVADAS	"alignas"|"alignof"|"and"|"and_eq"|"asm"|"atomic_cancel"|"atomic_com
 "#include "(" ")*.*			{ string meter = yytext; quitarEspacios(meter); meter.insert(meter.begin(), '\n'); EscribirFileaux(meter); }
 <LOCAL>({VARIABLES})		{ string meter = yytext; manejarLocal(meter); meter.insert(meter.begin(), '\n'); EscribirFileaux(meter); }
 {VARIABLES}					{ string meter = yytext; manejarGlobal(meter); meter.insert(meter.begin(), '\n'); EscribirFileaux(meter); }
-{BUCLES}					{ string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); meter.insert(meter.begin(), '\n'); meter += " {"; EscribirFileaux(meter); }
-{FUNCIONES}					{ string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); meter.insert(meter.begin(), '\n'); meter.insert(meter.begin(), '\n'); meter += " {"; EscribirFileaux(meter); }
+<SIN_LLAVES>{VALOR_VARIABLES}			{ BEGIN INITIAL; string meter = yytext; manejarLocal(meter); meter.insert(meter.begin(), '\n'); ContadorLlaves--; EscribirFileaux(meter); }
+{VALOR_VARIABLES}			{ string meter = yytext; manejarLocal(meter); meter.insert(meter.begin(), '\n'); EscribirFileaux(meter); }
+{BUCLES}					{ string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); meter.insert(meter.begin(), '\n'); BEGIN SIN_LLAVES; ContadorLlaves++; EscribirFileaux(meter); }
+{ELSE}						{ string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); meter.insert(meter.begin(), '\n'); BEGIN SIN_LLAVES; ContadorLlaves++; EscribirFileaux(meter); }
+{BUCLE_FOR}					{ string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); meter.insert(meter.begin(), '\n'); BEGIN SIN_LLAVES; ContadorLlaves++; EscribirFileaux(meter); }
+{FUNCIONES}					{ string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); meter.insert(meter.begin(), '\n'); ContadorLlaves++; EscribirFileaux(meter); }
 {OTRAS_FUNCIONES}			{ string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); meter.insert(meter.begin(), '\n'); meter.insert(meter.begin(), '\n'); EscribirFileaux(meter); }
-{CASOS_ESPECIALES}			{ string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); meter.insert(meter.begin(), '\n'); meter.insert(meter.begin(), '\n'); EscribirFileaux(meter); }
-{COMENTARIOS}				{ string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); meter.insert(meter.begin(), '\n'); meter.insert(meter.begin(), '\n'); EscribirFileaux(meter); }
-\{							{ ContadorLlaves++; BEGIN LOCAL; }
+{CASOS_ESPECIALES}			{ BEGIN INITIAL; string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); meter.insert(meter.begin(), '\n'); meter.insert(meter.begin(), '\n'); EscribirFileaux(meter); }
+{COMENTARIOS}				{ string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); EscribirFileaux(meter); }
+\{							{ EscribirFileaux(" {\n"); BEGIN LOCAL; }
 \}							{ ContadorLlaves--; string meter; meterTabuladores(meter); meter.insert(meter.begin(), '\n'); meter += "}\n"; EscribirFileaux(meter); if(ContadorLlaves == 0) BEGIN INITIAL; }
 .   						{ printf(" "); }
 
