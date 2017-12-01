@@ -8,11 +8,14 @@
 
 using namespace std;
 
+fstream os;
 int ContadorLlaves;
+int comment_caller;
 
 void EscribirFileaux(const string &una_cadena);
 void quitarEspacios(string &cadena);
 void quitarEspaciosFunciones(string &cadena);
+void manejarVariableGlobal(string &cadena);
 void manejarGlobal(string &cadena);
 void manejarLocal(string &cadena);
 void ponerEspacios(string &cadena);
@@ -22,43 +25,52 @@ void quitarEPrimeroUltimo(string & cadena);
 
 /*ALIAS*/
 
-%s LOCAL
-%s SIN_LLAVES
+%s LOCAL SIN_LLAVES COMENT_LARGO COMENT_SHORT
 
-NOMBRES				[A-Za-z0-9 ,.\\"'=\[\];\+-<>!&|\^%\/*_]*
-TIPOS				"char"|"char16_t"|"char32_t"|"wchar_t"|"signedchar"|"signedshortint"|"int"|"signedint"|"signedlongint"|"signedlonglongint"|"unsignedchar"|"unsignedshortint"|"unsignedint"|"unsignedlongint"|"unsignedlonglongint"|"float"|"double"|"longdouble"|"bool"|"void"|"decltype(nullptr)"|"long"|"short"|"signed"|"unsigned"
+NOMBRES				[A-Za-z0-9 .\\"'\[\]\+-<>!&|\^%=+\/*_]*
+TIPOS				"char"|"char16_t"|"char32_t"|"wchar_t"|"signed char"|"signed short int"|"int"|"signed int"|"signed long int"|"signed long long int"|"unsigned char"|"unsigned short int"|"unsigned int"|"unsigned long int"|"unsigned long long int"|"float"|"double"|"long double"|"bool"|"void"|"decltype(nullptr)"|"long"|"short"|"signed"|"unsigned"
 VARIABLES			((" ")|"\n")*"const"?((" ")|"\n")*{TIPOS}+((" ")|"\n")+{NOMBRES}((" ")|"\n")*;
-VALOR_VARIABLES		((" ")|"\n")*{NOMBRES}((" ")|"\n")*=((" ")|"\n")*{NOMBRES}((" ")|"\n")*;
+ASIGNA_VARIABLES_GLOBCONSTANTES		((" ")|"\n")*"const"((" ")|"\n")*{TIPOS}*((" ")|"\n")*{NOMBRES}((" ")|"\n")*=((" ")|"\n")*{NOMBRES}((" ")|"\n")*;
+ASIGNA_VARIABLES		((" ")|"\n")*{TIPOS}*((" ")|"\n")*{NOMBRES}((" ")|"\n")*(=|"<<"|">>")((" ")|"\n")*{NOMBRES}((" ")|"\n")*;
 FUNCIONES			((" ")|"\n")*{TIPOS}+((" ")|"\n")+{NOMBRES}((" ")|"\n")*\({NOMBRES}\)((" ")|"\n")*
-OTRAS_FUNCIONES		((" ")|"\n")+{NOMBRES}((" ")|"\n")*\({NOMBRES}\)((" ")|"\n")*;
-BUCLES				((" ")|"\n")*{PRESERVADAS}((" ")|"\n")*\({NOMBRES}\)((" ")|"\n")*
-ELSE				((" ")|"\n")*"else"((" ")|"\n")*
+LLAMADAS_FUNCIONES		((" ")|"\n")*{NOMBRES}((" ")|"\n")*\({NOMBRES}\)((" ")|"\n")*;?
+BUCLES_IF				((" ")|"\n")*{PRESERVADAS}((" ")|"\n")*\({LLAMADAS_FUNCIONES}*{NOMBRES}\)((" ")|"\n")*
+ELSE				((" ")|"\n")*"else"
 BUCLE_FOR			((" ")|"\n")*"for"((" ")|"\n")*\(((" ")|"\n")*{NOMBRES}((" ")|"\n")*\)((" ")|"\n")*
-CASOS_ESPECIALES	((" ")|"\n")*{PRESERVADAS}*((" ")|"\n")*{NOMBRES}[;|:]
-COMENTARIOS			((" ")|"\n")*(\/\/|\/\*)((" ")|"\n")*[^\n]*
-PRESERVADAS	"alignas"|"alignof"|"and"|"and_eq"|"asm"|"atomic_cancel"|"atomic_commit"|"atomic_noexcept"|"auto"|"bitand"|"bitor"|"break"|"case"|"catch"|"class"|"compl"|"concept"|"const"|"constexpr"|"const_cast"|"continue"|"co_await"|"co_return"|"co_yield"|"decltype"|"default"|"delete"|"do"|"double"|"dynamic_cast"|"enum"|"explicit"|"export"|"extern"|"false"|"for"|"friend"|"goto"|"if"|"import"|"inline"|"module"|"mutable"|"namespace"|"new"|"noexcept"|"not"|"not_eq"|"nullptr"|"operator"|"or"|"or_eq"|"private"|"protected"|"public"|"register"|"reinterpret_cast"|"requires"|"return"|"sizeof"|"static"|"static_assert"|"static_cast"|"struct"|"switch"|"synchronized"|"template"|"this"|"thread_local"|"throw"|"true"|"try"|"typedef"|"typeid"|"typename"|"union"|"using"|"virtual"|"void"|"volatile"|"while"|"xor"|"xor_eq"
+CASOS_ESPECIALES	((" ")|"\n")*{PRESERVADAS}+((" ")|"\n")*{NOMBRES}[;|:]
+PRESERVADAS	"alignas"|"alignof"|"and"|"and_eq"|"asm"|"atomic_cancel"|"atomic_commit"|"atomic_noexcept"|"auto"|"bitand"|"bitor"|"break"|"case"|"catch"|"class"|"compl"|"concept"|"const"|"constexpr"|"const_cast"|"continue"|"co_await"|"co_return"|"co_yield"|"decltype"|"default"|"delete"|"do"|"dynamic_cast"|"enum"|"explicit"|"export"|"extern"|"false"|"for"|"friend"|"goto"|"if"|"import"|"inline"|"module"|"mutable"|"namespace"|"new"|"noexcept"|"not"|"not_eq"|"nullptr"|"operator"|"or"|"or_eq"|"private"|"protected"|"public"|"register"|"reinterpret_cast"|"requires"|"return"|"sizeof"|"static"|"static_assert"|"static_cast"|"struct"|"switch"|"synchronized"|"template"|"this"|"thread_local"|"throw"|"true"|"try"|"typedef"|"typeid"|"typename"|"union"|"using"|"virtual"|"void"|"volatile"|"while"|"xor"|"xor_eq"
 
 
 /*REGLAS*/
 
 %%
 
+((" ")|"\n")*"/*"			{ string meter = yytext; cout << "coment largo: " << meter << endl;EscribirFileaux(meter); comment_caller= YYSTATE; BEGIN COMENT_LARGO;}
+<COMENT_LARGO>[^*]*			{ EscribirFileaux(yytext);}
+<COMENT_LARGO>"*"+[^*/]*	{ EscribirFileaux(yytext);}
+<COMENT_LARGO>"*/"			{ EscribirFileaux(yytext); BEGIN(comment_caller);}
+((" ")|"\n")*"\/\/"			{ comment_caller= YYSTATE;    EscribirFileaux(yytext);  BEGIN COMENT_SHORT;}
+<COMENT_SHORT>[^\n]*		{ BEGIN comment_caller; EscribirFileaux(yytext);}
 "#ifdef "[A-Za-z0-9_ ]*		{ string meter = yytext; quitarEspacios(meter); EscribirFileaux(meter); }
 "#endif"					{ EscribirFileaux("\n#endif\n"); }
 "#include "(" ")*.*			{ string meter = yytext; quitarEspacios(meter); meter.insert(meter.begin(), '\n'); EscribirFileaux(meter); }
-<LOCAL>({VARIABLES})		{ string meter = yytext; manejarLocal(meter); meter.insert(meter.begin(), '\n'); EscribirFileaux(meter); }
+{ASIGNA_VARIABLES_GLOBCONSTANTES}	 				{string meter = yytext; manejarVariableGlobal(meter); meter.insert(meter.begin(), '\n'); EscribirFileaux(meter); }
+<LOCAL>({VARIABLES})		{  string meter = yytext; manejarLocal(meter); meter.insert(meter.begin(), '\n'); EscribirFileaux(meter); }
 {VARIABLES}					{ string meter = yytext; manejarGlobal(meter); meter.insert(meter.begin(), '\n'); EscribirFileaux(meter); }
-<SIN_LLAVES>{VALOR_VARIABLES}			{ BEGIN INITIAL; string meter = yytext; manejarLocal(meter); meter.insert(meter.begin(), '\n'); ContadorLlaves--; EscribirFileaux(meter); }
-{VALOR_VARIABLES}			{ string meter = yytext; manejarLocal(meter); meter.insert(meter.begin(), '\n'); EscribirFileaux(meter); }
-{BUCLES}					{ string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); meter.insert(meter.begin(), '\n'); BEGIN SIN_LLAVES; ContadorLlaves++; EscribirFileaux(meter); }
-{ELSE}						{ string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); meter.insert(meter.begin(), '\n'); BEGIN SIN_LLAVES; ContadorLlaves++; EscribirFileaux(meter); }
-{BUCLE_FOR}					{ string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); meter.insert(meter.begin(), '\n'); BEGIN SIN_LLAVES; ContadorLlaves++; EscribirFileaux(meter); }
-{FUNCIONES}					{ string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); meter.insert(meter.begin(), '\n'); ContadorLlaves++; EscribirFileaux(meter); }
-{OTRAS_FUNCIONES}			{ string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); meter.insert(meter.begin(), '\n'); meter.insert(meter.begin(), '\n'); EscribirFileaux(meter); }
-{CASOS_ESPECIALES}			{ BEGIN INITIAL; string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); meter.insert(meter.begin(), '\n'); meter.insert(meter.begin(), '\n'); EscribirFileaux(meter); }
-{COMENTARIOS}				{ string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); EscribirFileaux(meter); }
-\{							{ EscribirFileaux(" {\n"); BEGIN LOCAL; }
-\}							{ ContadorLlaves--; string meter; meterTabuladores(meter); meter.insert(meter.begin(), '\n'); meter += "}\n"; EscribirFileaux(meter); if(ContadorLlaves == 0) BEGIN INITIAL; }
+<SIN_LLAVES>((" ")|"\n")*{NOMBRES}("++"|"--");		{BEGIN comment_caller; string meter = yytext; manejarLocal(meter); ContadorLlaves--; cout << "aumentador sin llaves: " << meter << endl; meter.insert(meter.begin(), '\n'); EscribirFileaux(meter);}
+((" ")|"\n")*{NOMBRES}("++"|"--");		{  string meter = yytext; manejarLocal(meter); meter.insert(meter.begin(), '\n');  EscribirFileaux(meter);}
+<SIN_LLAVES>{ASIGNA_VARIABLES}						{ BEGIN comment_caller; string meter = yytext; manejarLocal(meter); meter.insert(meter.begin(), '\n'); ContadorLlaves--; EscribirFileaux(meter); }
+{ASIGNA_VARIABLES}			{ string meter = yytext; manejarLocal(meter);  EscribirFileaux(meter); }
+{BUCLES_IF}					{ string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); meter.insert(meter.begin(), '\n'); comment_caller= YYSTATE;BEGIN SIN_LLAVES; ContadorLlaves++; EscribirFileaux(meter); }
+{ELSE}						{ string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); meter.insert(meter.begin(), '\n'); comment_caller= YYSTATE;BEGIN SIN_LLAVES; ContadorLlaves++; EscribirFileaux(meter); }
+{BUCLE_FOR}					{ string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); meter.insert(meter.begin(), '\n'); comment_caller= YYSTATE;BEGIN SIN_LLAVES; ContadorLlaves++; EscribirFileaux(meter); }
+{FUNCIONES}					{ string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); meter.insert(meter.begin(), '\n');meter.insert(meter.begin(), '\n'); ContadorLlaves++; EscribirFileaux(meter); }
+{LLAMADAS_FUNCIONES}		{ string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); meter.insert(meter.begin(), '\n'); meter.insert(meter.begin(), '\n'); EscribirFileaux(meter); }
+{CASOS_ESPECIALES}			{ BEGIN comment_caller; string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); meter+='\n'; meter.insert(meter.begin(), '\n'); EscribirFileaux(meter); }
+
+((" ")|"\n")*\{((" ")|"\n")*		{ EscribirFileaux(" {"); BEGIN LOCAL; }
+<LOCAL>\}					{ ContadorLlaves--; string meter; meterTabuladores(meter); meter.insert(meter.begin(), '\n'); meter += "}\n"; EscribirFileaux(meter); if(ContadorLlaves == 0) BEGIN INITIAL; }
+
 .   						{ printf(" "); }
 
 %%
@@ -72,6 +84,7 @@ int main(int argc, char *argv[]){
 		}
 	}else yyin= stdin;
 
+
 ContadorLlaves = 0;
 
 yylex();
@@ -81,7 +94,7 @@ return 0;
 }
 
 void EscribirFileaux(const string &una_cadena) {
-	fstream os("aux", fstream::out|fstream::app);
+	os.open("auxx.cpp", ios::out|ios::app);
 	os << una_cadena;
 	os.close();
 }
@@ -136,6 +149,26 @@ void manejarGlobal(string &cadena) {
 			cadena[i] = tolower(cadena[i]);
 
 	}
+}
+
+void manejarVariableGlobal(string &cadena) {
+	quitarEspacios(cadena);
+	ponerEspacios(cadena);
+	meterTabuladores(cadena);
+
+	/*Algoritmo para poner variable en mayuscula:
+		Buscamos '=' en la palabra sin mas de dos espacios y buscamos a la inversa
+		desde esa posicion el primer espacio que tengamos.*/
+	int pos_equal= cadena.find_first_of('=', 0);
+	int pos_space=0;
+
+	if(cadena[pos_equal-1] == ' ')
+		pos_equal-=2;
+
+	pos_space=cadena.rfind(' ', pos_equal);
+
+	for(int i = pos_space; i <= pos_equal; i++)
+			cadena[i] = toupper(cadena[i]);
 }
 
 void manejarLocal(string &cadena) {

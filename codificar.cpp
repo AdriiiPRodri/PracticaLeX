@@ -1,21 +1,23 @@
-/**
-  * @file imagenES.cpp
-  * @brief Fichero con definiciones para la E/S de imágenes
-  *
-  * Permite la E/S de archivos de tipo PGM,PPM
-  *
-  */
+
+/*
+  *@file imagenES.cpp
+  *@brief Fichero con definiciones para la E/S de imágenes
+
+  *Permite la E/S de archivos de tipo PGM,PPM
+*/
 #include <iostream>
 #include <cstring>
 #include "codificar.h"
 using namespace std;
-const int MAXMENSAJE= 125000;
-const unsigned short int COMP_BIT_IMG = 0x01;
+
+const     int     maxmensaje     =       125000      ;
+const      unsigned      short     int      comp_bit_Img    =       0x01;
 
 bool Ocultar(unsigned char imagen[], const char mensaje[]){
     unsigned short int comp_bit_men;
-    int i= 0, k= 0;  //i: indice que recorre el vector mensaje, k: indice que recorre el vector imagen
-    char octeto_res;
+    int I        = 0;
+    int K       = 0;  //i: indice que recorre el vector mensaje, k: indice que recorre el vector imagen
+    char ocTETo_res;
     bool bit_imagen, bit_mensaje;
 
     while(mensaje[i] != '\0'){
@@ -61,7 +63,7 @@ bool Ocultar(unsigned char imagen[], const char mensaje[]){
 
 bool Revelar(const unsigned char imagen[], char mensaje[]){
     unsigned short int comp_bit_men = 0x80;
-    int i= 0, j= 0, k= 0;  //k: indice que recorre el vector imagen, j: indice que cuenta los ceros seguidos, k: indice que recorre el vector mensaje.
+    int I= 0, j= 0, k= 0;  //k: indice que recorre el vector imagen, j: indice que cuenta los ceros seguidos, k: indice que recorre el vector mensaje.
     char octeto_imagen, octeto_res = '\0';
     bool bit_imagen, byte_cero=false;
 
@@ -95,7 +97,7 @@ bool Revelar(const unsigned char imagen[], char mensaje[]){
         el byte a leer de la imagen y movemos los bits de comp_bit_men para comprobar el bit siguiente*/
         comp_bit_men = comp_bit_men >> 1;
         byte_cero = j >= 8;
-        i++;
+        i+=1;
     }
 
     return byte_cero;

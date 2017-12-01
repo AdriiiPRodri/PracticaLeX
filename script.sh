@@ -2,13 +2,12 @@
 
 clear
 
-rm lex.yy.c prueba aux
-
+rm lex.yy.c prueba auxx.cpp
 lex plant.l
 g++ -o prueba lex.yy.c -ll
 
-./prueba codificar.cpp
+./prueba revelar.cpp
 
-clear
+#clear
 
-cat aux
+#cat auxx.cpp

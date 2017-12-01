@@ -76,5 +76,3 @@ int main(){
         cerr << "Error: el tamanio del mensaje es demasiado grande." << endl;
 
 }
-
-

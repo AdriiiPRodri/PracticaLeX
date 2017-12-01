@@ -18,7 +18,7 @@ const int MAXMENSAJE= 125000;
 
 int main(){
     int filas, columnas;
-    bool error_lectura = 0, error_formato = 0, error_terminador = 0;
+    bool erROr_lectura = 0, error_formato = 0, error_terminador = 0;
 
     char nom_img_in[MAXNOMBRE];
     unsigned char buffer[MAXBUFFER];
@@ -62,5 +62,3 @@ int main(){
         cerr << "Error: la imagen no contiene un terminador o contiene un mensaje demasiado grande." <<endl;
 
 }
-
-
