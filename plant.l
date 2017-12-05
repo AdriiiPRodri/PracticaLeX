@@ -60,13 +60,13 @@ PRESERVADAS	"alignas"|"alignof"|"and"|"and_eq"|"asm"|"atomic_cancel"|"atomic_com
 <SIN_LLAVES>((" ")|"\n")*{NOMBRES}("++"|"--");		{BEGIN comment_caller; string meter = yytext; manejarLocal(meter); ContadorLlaves--; cout << "aumentador sin llaves: " << meter << endl; meter.insert(meter.begin(), '\n'); EscribirFileaux(meter);}
 ((" ")|"\n")*{NOMBRES}("++"|"--");		{  string meter = yytext; manejarLocal(meter); meter.insert(meter.begin(), '\n');  EscribirFileaux(meter);}
 <SIN_LLAVES>{ASIGNA_VARIABLES}						{ BEGIN comment_caller; string meter = yytext; manejarLocal(meter); meter.insert(meter.begin(), '\n'); ContadorLlaves--; EscribirFileaux(meter); }
-{ASIGNA_VARIABLES}			{ string meter = yytext; manejarLocal(meter);  EscribirFileaux(meter); }
+{ASIGNA_VARIABLES}			{ string meter = yytext; manejarLocal(meter);cout << "asigna variables: " << meter << endl; meter.insert(meter.begin(), '\n');  EscribirFileaux(meter); }
 {BUCLES_IF}					{ string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); meter.insert(meter.begin(), '\n'); comment_caller= YYSTATE;BEGIN SIN_LLAVES; ContadorLlaves++; EscribirFileaux(meter); }
 {ELSE}						{ string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); meter.insert(meter.begin(), '\n'); comment_caller= YYSTATE;BEGIN SIN_LLAVES; ContadorLlaves++; EscribirFileaux(meter); }
 {BUCLE_FOR}					{ string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); meter.insert(meter.begin(), '\n'); comment_caller= YYSTATE;BEGIN SIN_LLAVES; ContadorLlaves++; EscribirFileaux(meter); }
 {FUNCIONES}					{ string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); meter.insert(meter.begin(), '\n');meter.insert(meter.begin(), '\n'); ContadorLlaves++; EscribirFileaux(meter); }
 {LLAMADAS_FUNCIONES}		{ string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); meter.insert(meter.begin(), '\n'); meter.insert(meter.begin(), '\n'); EscribirFileaux(meter); }
-{CASOS_ESPECIALES}			{ BEGIN comment_caller; string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); meter+='\n'; meter.insert(meter.begin(), '\n'); EscribirFileaux(meter); }
+{CASOS_ESPECIALES}			{ BEGIN comment_caller; string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); cout << "especiales: " << meter << endl; meter+='\n'; meter.insert(meter.begin(), '\n'); EscribirFileaux(meter); }
 
 ((" ")|"\n")*\{((" ")|"\n")*		{ EscribirFileaux(" {"); BEGIN LOCAL; }
 <LOCAL>\}					{ ContadorLlaves--; string meter; meterTabuladores(meter); meter.insert(meter.begin(), '\n'); meter += "}\n"; EscribirFileaux(meter); if(ContadorLlaves == 0) BEGIN INITIAL; }

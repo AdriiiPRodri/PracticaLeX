@@ -24232,7 +24232,7 @@ case 16:
 /* rule 16 can match eol */
 YY_RULE_SETUP
 #line 63 "plant.l"
-{ string meter = yytext; manejarLocal(meter);  EscribirFileaux(meter); }
+{ string meter = yytext; manejarLocal(meter);cout << "asigna variables: " << meter << endl; meter.insert(meter.begin(), '\n');  EscribirFileaux(meter); }
 	YY_BREAK
 case 17:
 /* rule 17 can match eol */
@@ -24268,7 +24268,7 @@ case 22:
 /* rule 22 can match eol */
 YY_RULE_SETUP
 #line 69 "plant.l"
-{ BEGIN comment_caller; string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); meter+='\n'; meter.insert(meter.begin(), '\n'); EscribirFileaux(meter); }
+{ BEGIN comment_caller; string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); cout << "especiales: " << meter << endl; meter+='\n'; meter.insert(meter.begin(), '\n'); EscribirFileaux(meter); }
 	YY_BREAK
 case 23:
 /* rule 23 can match eol */

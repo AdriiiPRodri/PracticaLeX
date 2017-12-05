@@ -20,10 +20,14 @@ int main() {
 	bool error_lectura = 0, error_formato = 0, error_terminador = 0;
 	char nom_img_in[maxnombre];
 	unsigned char buffer[maxbuffer];
-	char mensaje[maxmensaje]= "";	cout << "introduzca la imagen de entrada: ";	cin >> nom_img_in;
+	char mensaje[maxmensaje]= "";
+	cout << "introduzca la imagen de entrada: ";
+	cin >> nom_img_in;
 	if(LeerTipoImagen(nom_img_in, filas, columnas) == IMG_PGM) {
 		if(LeerImagenPGM(nom_img_in, filas, columnas, buffer)) {
-			if(Revelar(buffer, mensaje)) {				cout << "revelando.." << endl;				cout << "el mensaje obtenido es: " << endl << mensaje << endl;
+			if(Revelar(buffer, mensaje)) {
+				cout << "revelando.." << endl;
+				cout << "el mensaje obtenido es: " << endl << mensaje << endl;
 			}
 
 			else
@@ -37,7 +41,9 @@ int main() {
 	else
 		if(LeerTipoImagen(nom_img_in, filas, columnas) == IMG_PPM) {
 			if(LeerImagenPPM(nom_img_in, filas, columnas, buffer)) {
-				if(Revelar(buffer, mensaje)) {					cout << "revelando.." << endl;					cout << "el mensaje obtenido es: " << endl << mensaje << endl;
+				if(Revelar(buffer, mensaje)) {
+					cout << "revelando.." << endl;
+					cout << "el mensaje obtenido es: " << endl << mensaje << endl;
 				}
 
 				else
