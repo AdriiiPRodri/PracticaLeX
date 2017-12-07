@@ -35,9 +35,13 @@ ASIGNA_VARIABLES		((" ")|"\n")*{TIPOS}*((" ")|"\n")*{NOMBRES}((" ")|"\n")*(=|"<<
 FUNCIONES			((" ")|"\n")*{TIPOS}+((" ")|"\n")+{NOMBRES}((" ")|"\n")*\({NOMBRES}\)((" ")|"\n")*
 LLAMADAS_FUNCIONES		((" ")|"\n")*{NOMBRES}((" ")|"\n")*\({NOMBRES}\)((" ")|"\n")*;?
 BUCLES_IF				((" ")|"\n")*{PRESERVADAS}((" ")|"\n")*\({LLAMADAS_FUNCIONES}*{NOMBRES}\)((" ")|"\n")*
+SWITCH				((" ")|"\n")*{PRESERVADAS}((" ")|"\n")*\({NOMBRES}\)((" ")|"\n")*\{((" ")|"\n")*
+CASE				((" ")|"\n")*{PRESERVADAS}((" ")|"\n")*{NOMBRES}((" ")|"\n")*:((" ")|"\n")*
+BREAK				((" ")|"\n")*break;((" ")|"\n")*
 ELSE				((" ")|"\n")*"else"
 BUCLE_FOR			((" ")|"\n")*"for"((" ")|"\n")*\(((" ")|"\n")*{NOMBRES}((" ")|"\n")*\)((" ")|"\n")*
 CASOS_ESPECIALES	((" ")|"\n")*{PRESERVADAS}+((" ")|"\n")*{NOMBRES}[;|:]
+STRUCT				((" ")|"\n")*{PRESERVADAS}((" ")|"\n")*{NOMBRES}((" ")|"\n")*\{((" ")|"\n")*
 PRESERVADAS	"alignas"|"alignof"|"and"|"and_eq"|"asm"|"atomic_cancel"|"atomic_commit"|"atomic_noexcept"|"auto"|"bitand"|"bitor"|"break"|"case"|"catch"|"class"|"compl"|"concept"|"const"|"constexpr"|"const_cast"|"continue"|"co_await"|"co_return"|"co_yield"|"decltype"|"default"|"delete"|"do"|"dynamic_cast"|"enum"|"explicit"|"export"|"extern"|"false"|"for"|"friend"|"goto"|"if"|"import"|"inline"|"module"|"mutable"|"namespace"|"new"|"noexcept"|"not"|"not_eq"|"nullptr"|"operator"|"or"|"or_eq"|"private"|"protected"|"public"|"register"|"reinterpret_cast"|"requires"|"return"|"sizeof"|"static"|"static_assert"|"static_cast"|"struct"|"switch"|"synchronized"|"template"|"this"|"thread_local"|"throw"|"true"|"try"|"typedef"|"typeid"|"typename"|"union"|"using"|"virtual"|"void"|"volatile"|"while"|"xor"|"xor_eq"
 
 
@@ -61,13 +65,16 @@ PRESERVADAS	"alignas"|"alignof"|"and"|"and_eq"|"asm"|"atomic_cancel"|"atomic_com
 ((" ")|"\n")*{NOMBRES}("++"|"--");		{  string meter = yytext; manejarLocal(meter); meter.insert(meter.begin(), '\n');  EscribirFileaux(meter);}
 <SIN_LLAVES>{ASIGNA_VARIABLES}						{ BEGIN comment_caller; string meter = yytext; manejarLocal(meter); meter.insert(meter.begin(), '\n'); ContadorLlaves--; EscribirFileaux(meter); }
 {ASIGNA_VARIABLES}			{ string meter = yytext; manejarLocal(meter);cout << "asigna variables: " << meter << endl; meter.insert(meter.begin(), '\n');  EscribirFileaux(meter); }
-{BUCLES_IF}					{ string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); meter.insert(meter.begin(), '\n'); comment_caller= YYSTATE;BEGIN SIN_LLAVES; ContadorLlaves++; EscribirFileaux(meter); }
-{ELSE}						{ string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); meter.insert(meter.begin(), '\n'); comment_caller= YYSTATE;BEGIN SIN_LLAVES; ContadorLlaves++; EscribirFileaux(meter); }
-{BUCLE_FOR}					{ string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); meter.insert(meter.begin(), '\n'); comment_caller= YYSTATE;BEGIN SIN_LLAVES; ContadorLlaves++; EscribirFileaux(meter); }
+{BUCLES_IF}					{ string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); meter.insert(meter.begin(), '\n'); comment_caller= YYSTATE; BEGIN SIN_LLAVES; ContadorLlaves++; EscribirFileaux(meter); }
+{ELSE}						{ string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); meter.insert(meter.begin(), '\n'); comment_caller= YYSTATE; BEGIN SIN_LLAVES; ContadorLlaves++; EscribirFileaux(meter); }
+{BUCLE_FOR}					{ string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); meter.insert(meter.begin(), '\n'); comment_caller= YYSTATE; BEGIN SIN_LLAVES; ContadorLlaves++; EscribirFileaux(meter); }
+{BREAK}						{ string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); meter.insert(meter.begin(), '\n'); ContadorLlaves--; EscribirFileaux(meter); }
+{SWITCH}					{ string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); meter.insert(meter.begin(), '\n'); comment_caller= YYSTATE; ContadorLlaves++; EscribirFileaux(meter); }
+{CASE}						{ string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); meter.insert(meter.begin(), '\n'); comment_caller= YYSTATE; ContadorLlaves++; EscribirFileaux(meter); }
 {FUNCIONES}					{ string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); meter.insert(meter.begin(), '\n');meter.insert(meter.begin(), '\n'); ContadorLlaves++; EscribirFileaux(meter); }
 {LLAMADAS_FUNCIONES}		{ string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); meter.insert(meter.begin(), '\n'); meter.insert(meter.begin(), '\n'); EscribirFileaux(meter); }
 {CASOS_ESPECIALES}			{ BEGIN comment_caller; string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); cout << "especiales: " << meter << endl; meter+='\n'; meter.insert(meter.begin(), '\n'); EscribirFileaux(meter); }
-
+{STRUCT}					{ string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); meter.insert(meter.begin(), '\n'); comment_caller= YYSTATE; BEGIN LOCAL; ContadorLlaves++; EscribirFileaux(meter); }
 ((" ")|"\n")*\{((" ")|"\n")*		{ EscribirFileaux(" {"); BEGIN LOCAL; }
 <LOCAL>\}					{ ContadorLlaves--; string meter; meterTabuladores(meter); meter.insert(meter.begin(), '\n'); meter += "}\n"; EscribirFileaux(meter); if(ContadorLlaves == 0) BEGIN INITIAL; }
 

@@ -11,12 +11,61 @@
 #include "codificar.h"
 #include "imagenES.h"
 using namespace std;
-
-const int MAXBUFFER= 1000000;
-const int MAXNOMBRE= 100;
+struct product {
+  int weight;
+  double price;
+} ;
+const int maxbuffer= 1000000;
+const int MAXnOMBRE= 100;
 const int MAXMENSAJE= 125000;
 
+
+
 int main(){
+
+    switch (caracola) {
+        case this->value:
+          int a;
+          break;
+        case that->value:
+          if ola == that->value
+          break;
+        case 1:
+        if(LeerTipoImagen(nom_img_in, filas, columnas) == IMG_PGM){
+            if(LeerImagenPGM(nom_img_in, filas, columnas, buffer)){
+                if(Revelar(buffer, mensaje)){
+                    cout << "Revelando.." << endl;
+                    cout << "El mensaje obtenido es: " << endl << mensaje << endl;
+                }
+                else
+                    error_terminador = true;
+            }
+            else
+                error_lectura = true;
+        }
+        else if(LeerTipoImagen(nom_img_in, filas, columnas) == IMG_PPM){
+            if(LeerImagenPPM(nom_img_in, filas, columnas, buffer)){
+                if(Revelar(buffer, mensaje)){
+                    cout << "Revelando.." << endl;
+                    cout << "El mensaje obtenido es: " << endl << mensaje << endl;
+                }
+                else
+                    error_terminador = true;
+            }
+            else
+                error_lectura = true;
+        }
+        else
+            error_formato = true;
+            break;
+        case a:
+            break;
+        default:
+          //Code to execute if <variable> does not equal the value following any of the cases
+          break;
+        }
+
+
     int filas, columnas;
     bool erROr_lectura = 0, error_formato = 0, error_terminador = 0;
 
