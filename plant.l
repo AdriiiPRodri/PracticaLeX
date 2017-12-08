@@ -27,7 +27,7 @@ void quitarEPrimeroUltimo(string & cadena);
 
 %s LOCAL SIN_LLAVES COMENT_LARGO COMENT_SHORT
 
-NOMBRES				[A-Za-z0-9 _,:"'<>!&%=\|\.\*\[\]\+\\-]*
+NOMBRES				[A-Za-z0-9 _,:#/"'<>!&%=\|\.\*\[\]\+\\-]*
 TIPOS					"char"|"char16_t"|"char32_t"|"wchar_t"|"signed char"|"signed short int"|"int"|"signed int"|"signed long int"|"signed long long int"|"unsigned char"|"unsigned short int"|"unsigned int"|"unsigned long int"|"unsigned long long int"|"float"|"double"|"long double"|"bool"|"void"|"decltype(nullptr)"|"long"|"short"|"signed"|"unsigned"|[a-zA-Z0-9]
 VARIABLES			((" ")|"\n")*"const"?((" ")|"\n")*{TIPOS}+((" ")|"\n")+{NOMBRES}((" ")|"\n")*;
 ASIGNA_VARIABLES_GLOBCONSTANTES		((" ")|"\n")*"const"((" ")|"\n")*{TIPOS}*((" ")|"\n")*{NOMBRES}*((" ")|"\n")*=((" ")|"\n")*{NOMBRES}((" ")|"\n")*;

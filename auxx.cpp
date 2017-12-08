@@ -15,21 +15,14 @@ TipoImagen LeerTipo(ifstream& f) {
 	if(f) {
 		c1= f.get();
 		c2= f.get();
-		if(f && c1=='P') {
+		if(f && c1=='P')
 			switch(c2) {
-				case '5':
-					res= img_pgm;
-					break;
-				case '6':
-					res= img_ppm;
-					break;
-				default:
-					res= img_desconocido;
-				}
-			}
-		}
-		return res;
-	}
+				case '5': Res= ImgPGm;
+				break;
+			case '6': Res= ImgPPm;
+			break;
+		default: res= img_desconocido;
+	return Res;
 // _____________________________________________________________________________
 	TipoImagen LeerTipoImagen(const char nombre[]) {
 		ifstream f(nombre,ios::in|ios::binary);
@@ -38,41 +31,44 @@ TipoImagen LeerTipo(ifstream& f) {
 // _____________________________________________________________________________
 	char SaltarSeparadores(ifstream& f) {
 		char c;
+   // do {
+		// c= f.get();
+   // } while (isspace(c));
 		f.putback(c);
 		return c;
 	}
 // _____________________________________________________________________________
 	bool LeerCabecera(ifstream& f, int& filas, int& columnas) {
 		int maxvalor;
-		while(i)
+		while(SaltarSeparadores(f)=='#')
 			f.ignore(10000,'\n');
-			f >> Columnas >> Filas >> Maxvalor;/*str &&*/ {
-			f.get(); // Saltamos separador
-			return true;
-		}
-		else return false;
-	}
-// _____________________________________________________________________________
-	TipoImagen LeerTipoImagen(const char nombre[], int& filas, int& columnas) {
-		tipoimagen tipo;
-		filas=columnas=0;
-		ifstream f(nombre,ios::in|ios::binary);
-		tipo=LeerTipo(f);
-		if(tipo!=IMG_DESCONOCIDO)
-			if(!LeerCabecera(f,filas,columnas)) {
-				tipo=img_desconocido;
+			f >> Columnas >> Filas >> Maxvalor;
+			if(/*str &&*/ f && filas>0 && filas <5000 && columnas >0 && columnas<5000) {
+				f.get(); // Saltamos separador
+				return true;
 			}
-			return tipo;
+			else return false;
 		}
 // _____________________________________________________________________________
-		bool LeerImagenPPM(const char nombre[], int& filas, int& columnas, unsigned char buffer[]) {
-			bool exito= false;
-			filas=0;
-			columnas=0;
+		TipoImagen LeerTipoImagen(const char nombre[], int& filas, int& columnas) {
+			tipoimagen tipo;
+			filas=columnas=0;
 			ifstream f(nombre,ios::in|ios::binary);
-			if(LeerTipo(f)==IMG_PPM)
-				if(LeerCabecera (f, filas, columnas))
-					char *>(buffer)
+			tipo=LeerTipo(f);
+			if(tipo!=IMG_DESCONOCIDO)
+				if(!LeerCabecera(f,filas,columnas)) {
+					tipo=img_desconocido;
+				}
+				return tipo;
+			}
+// _____________________________________________________________________________
+			bool LeerImagenPPM(const char nombre[], int& filas, int& columnas, unsigned char buffer[]) {
+				bool exito= false;
+				filas=0;
+				columnas=0;
+				ifstream f(nombre,ios::in|ios::binary);
+				if(LeerTipo(f)==IMG_PPM)
+					if(LeerCabecera (f, filas, columnas))
 						exito= true;
 					return Exito;
 // _____________________________________________________________________________

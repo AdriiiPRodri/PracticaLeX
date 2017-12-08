@@ -7,44 +7,26 @@
   */
 
 #include <fstream>
-
-
-
-                        #include <string>
+#include <string>
 #include "imagenES.h"
-
 using namespace std;
 
-TipoImagen LeerTipo(ifstream& f){
+
+TipoImagen LeerTipo(ifstream& f)
+{
    char c1, c2;
    TipoImagen res= IMG_DESCONOCIDO;
 
    if (f) {
       c1= f.get();
       c2= f.get();
-
-
-
-
-      if (f && c1=='P'){
-                                    switch (c2) {
-            case '5':
-            res= IMG_PGM;
-            break;
-            case '6':
-            res= IMG_PPM;
-            break;
-            default:
-            res= IMG_DESCONOCIDO;
-
-
-
-                                }
-                              }
+      if (f && c1=='P')
+         switch (c2) {
+            case '5': res= IMG_PGM; break;
+            case '6': res= IMG_PPM; break;
+            default: res= IMG_DESCONOCIDO;
+         }
    }
-
-
-
    return res;
 }
 
@@ -53,9 +35,7 @@ TipoImagen LeerTipo(ifstream& f){
 TipoImagen LeerTipoImagen(const char nombre[])
 {
    ifstream f(nombre,ios::in|ios::binary);
-
-
-                return LeerTipo(f);
+   return LeerTipo(f);
 }
 
 
@@ -64,10 +44,10 @@ TipoImagen LeerTipoImagen(const char nombre[])
 char SaltarSeparadores (ifstream& f)
 {
    char c;
+   // do {
+   //    c= f.get();
+   // } while (isspace(c));
    f.putback(c);
-
-
-
    return c;
 }
 
@@ -77,15 +57,12 @@ bool LeerCabecera (ifstream& f, int& filas, int& columnas)
 {
    int maxvalor;
 
-   while (i)
-              f.ignore(10000,'\n');
+   while (SaltarSeparadores(f)=='#')
+   f.ignore(10000,'\n');
 
    f >> columnas >> filas >> maxvalor;
 
    if (/*str &&*/ f && filas>0 && filas <5000 && columnas >0 && columnas<5000) {
-
-
-
       f.get(); // Saltamos separador
       return true;
    }
@@ -95,21 +72,14 @@ bool LeerCabecera (ifstream& f, int& filas, int& columnas)
 // _____________________________________________________________________________
 
 TipoImagen LeerTipoImagen(const char nombre[], int& filas, int& columnas)
-
-
 {
    TipoImagen tipo;
    filas=columnas=0;
    ifstream f(nombre,ios::in|ios::binary);
 
-
-
    tipo=LeerTipo(f);
    if (tipo!=IMG_DESCONOCIDO)
-
-
-
-            if (!LeerCabecera(f,filas,columnas)) {
+      if (!LeerCabecera(f,filas,columnas)) {
          tipo=IMG_DESCONOCIDO;
       }
 
@@ -128,7 +98,6 @@ bool LeerImagenPPM (const char nombre[], int& filas, int& columnas, unsigned cha
 
    if (LeerTipo(f)==IMG_PPM)
       if (LeerCabecera (f, filas, columnas))
-         if (f.read(reinterpret_cast<char *>(buffer),filas*columnas*3))
             exito= true;
 
    return exito;
