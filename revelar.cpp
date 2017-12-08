@@ -33,7 +33,8 @@ int main(){
 
           break;
         case 5:
-          if(true)
+      int juane=4;
+      if(true)
             cout << "prueba";
           break;
         case 1:

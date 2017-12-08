@@ -13,15 +13,9 @@
                         #include <string>
 #include "imagenES.h"
 
-
-
 using namespace std;
 
-TipoImagen LeerTipo(ifstream& f)
-
-
-
-                                  {
+TipoImagen LeerTipo(ifstream& f){
    char c1, c2;
    TipoImagen res= IMG_DESCONOCIDO;
 
@@ -32,15 +26,21 @@ TipoImagen LeerTipo(ifstream& f)
 
 
 
-      if (f && c1=='P')
+      if (f && c1=='P'){
                                     switch (c2) {
-            case '5': res= IMG_PGM; break;
-            case '6': res= IMG_PPM; break;
-            default: res= IMG_DESCONOCIDO;
+            case '5':
+            res= IMG_PGM;
+            break;
+            case '6':
+            res= IMG_PPM;
+            break;
+            default:
+            res= IMG_DESCONOCIDO;
 
 
 
                                 }
+                              }
    }
 
 
@@ -64,12 +64,6 @@ TipoImagen LeerTipoImagen(const char nombre[])
 char SaltarSeparadores (ifstream& f)
 {
    char c;
-   do {
-
-
-
-      c= f.get();
-   }         while (isspace(c));
    f.putback(c);
 
 
@@ -83,9 +77,7 @@ bool LeerCabecera (ifstream& f, int& filas, int& columnas)
 {
    int maxvalor;
 
-   while (SaltarSeparadores(f)=='#')
-
-
+   while (i)
               f.ignore(10000,'\n');
 
    f >> columnas >> filas >> maxvalor;

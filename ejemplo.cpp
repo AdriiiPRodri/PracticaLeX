@@ -1,16 +1,9 @@
-
-
-
-
-
-
-                              #ifdef                  _WIN32
+#ifdef                  _WIN32
 #include <windows.h>
 #endif
 #include            "stdio.h"
 #include "stdlib.h"
 #include "fstream"
-
 
 int Valor,valor2,valor3;
 int valor1;

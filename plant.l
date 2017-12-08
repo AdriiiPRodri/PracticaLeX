@@ -24,31 +24,26 @@ void quitarEPrimeroUltimo(string & cadena);
 %}
 
 /*ALIAS*/
-/*
-comentarios o portapapeles
 
-[A-Za-z0-9 _"'-!&%=<>\\\[\]\+\|\*]*
-
-*/
 %s LOCAL SIN_LLAVES COMENT_LARGO COMENT_SHORT
 
-NOMBRES				[A-Za-z0-9 _,"'<>!&%=\|\.\*\[\]\+\\-]*
-TIPOS				"char"|"char16_t"|"char32_t"|"wchar_t"|"signed char"|"signed short int"|"int"|"signed int"|"signed long int"|"signed long long int"|"unsigned char"|"unsigned short int"|"unsigned int"|"unsigned long int"|"unsigned long long int"|"float"|"double"|"long double"|"bool"|"void"|"decltype(nullptr)"|"long"|"short"|"signed"|"unsigned"
+NOMBRES				[A-Za-z0-9 _,:"'<>!&%=\|\.\*\[\]\+\\-]*
+TIPOS					"char"|"char16_t"|"char32_t"|"wchar_t"|"signed char"|"signed short int"|"int"|"signed int"|"signed long int"|"signed long long int"|"unsigned char"|"unsigned short int"|"unsigned int"|"unsigned long int"|"unsigned long long int"|"float"|"double"|"long double"|"bool"|"void"|"decltype(nullptr)"|"long"|"short"|"signed"|"unsigned"|[a-zA-Z0-9]
 VARIABLES			((" ")|"\n")*"const"?((" ")|"\n")*{TIPOS}+((" ")|"\n")+{NOMBRES}((" ")|"\n")*;
-ASIGNA_VARIABLES_GLOBCONSTANTES		((" ")|"\n")*"const"((" ")|"\n")*{TIPOS}*((" ")|"\n")*{NOMBRES}((" ")|"\n")*=((" ")|"\n")*{NOMBRES}((" ")|"\n")*;
+ASIGNA_VARIABLES_GLOBCONSTANTES		((" ")|"\n")*"const"((" ")|"\n")*{TIPOS}*((" ")|"\n")*{NOMBRES}*((" ")|"\n")*=((" ")|"\n")*{NOMBRES}((" ")|"\n")*;
 ASIGNA_VARIABLES		((" ")|"\n")*{TIPOS}*((" ")|"\n")*{NOMBRES}((" ")|"\n")*(=|"<<"|">>")((" ")|"\n")*{NOMBRES}((" ")|"\n")*;
 FUNCIONES			((" ")|"\n")*{TIPOS}+((" ")|"\n")+{NOMBRES}((" ")|"\n")*\({NOMBRES}\)
 BUCLES_IF				((" ")|"\n")*"else"?((" ")|"\n")*{PRESERVADAS}((" ")|"\n")*\({PARAMETRO_FUNCION}*{NOMBRES}\)
 BUCLES_FOR				((" ")|"\n")*"for"((" ")|"\n")*\(((" ")|"\n")*{NOMBRES};((" ")|"\n")*{NOMBRES};((" ")|"\n")*{NOMBRES}\)
 PARAMETRO_FUNCION		((" ")|"\n")*{NOMBRES}((" ")|"\n")*\({NOMBRES}\)((" ")|"\n")*
 LLAMADAS_FUNCIONES		((" ")|"\n")*{NOMBRES}((" ")|"\n")*\({NOMBRES}\)((" ")|"\n")*;
-SWITCH				((" ")|"\n")*"switch"((" ")|"\n")*\({LLAMADAS_FUNCIONES}*{NOMBRES}\)((" ")|"\n")*\{
+SWITCH			((" ")|"\n")*"switch"((" ")|"\n")*\({LLAMADAS_FUNCIONES}*{NOMBRES}\)((" ")|"\n")*\{
 CASE				((" ")|"\n")*(("case"((" ")|"\n")*{NOMBRES})|"default")((" ")|"\n")*:
-BREAK				((" ")|"\n")*break((" ")|"\n")*;
+BREAK				((" ")|"\n")*"break"((" ")|"\n")*;
 ELSE				((" ")|"\n")*"else"
 CASOS_ESPECIALES	((" ")|"\n")*{PRESERVADAS}+((" ")|"\n")*{NOMBRES}[;|:]
 STRUCT				((" ")|"\n")*("struct"|"class")((" ")|"\n")*{NOMBRES}((" ")|"\n")*\{
-PRESERVADAS	"alignas"|"alignof"|"and"|"and_eq"|"asm"|"atomic_cancel"|"atomic_commit"|"atomic_noexcept"|"auto"|"bitand"|"bitor"|"break"|"case"|"catch"|"class"|"compl"|"concept"|"const"|"constexpr"|"const_cast"|"continue"|"co_await"|"co_return"|"co_yield"|"decltype"|"default"|"delete"|"do"|"dynamic_cast"|"enum"|"explicit"|"export"|"extern"|"false"|"for"|"friend"|"goto"|"if"|"import"|"inline"|"module"|"mutable"|"namespace"|"new"|"noexcept"|"not"|"not_eq"|"nullptr"|"operator"|"or"|"or_eq"|"private"|"protected"|"public"|"register"|"reinterpret_cast"|"requires"|"return"|"sizeof"|"static"|"static_assert"|"static_cast"|"struct"|"switch"|"synchronized"|"template"|"this"|"thread_local"|"throw"|"true"|"try"|"typedef"|"typeid"|"typename"|"union"|"using"|"virtual"|"void"|"volatile"|"while"|"xor"|"xor_eq"
+PRESERVADAS	"alignas"|"alignof"|"and"|"and_eq"|"asm"|"atomic_cancel"|"atomic_commit"|"atomic_noexcept"|"auto"|"bitand"|"bitor"|"break"|"case"|"catch"|"class"|"compl"|"concept"|"const"|"constexpr"|"const_cast"|"continue"|"co_await"|"co_return"|"co_yield"|"decltype"|"default"|"delete"|"dynamic_cast"|"enum"|"explicit"|"export"|"extern"|"false"|"for"|"friend"|"goto"|"if"|"import"|"inline"|"module"|"mutable"|"namespace"|"new"|"noexcept"|"not"|"not_eq"|"nullptr"|"operator"|"or"|"or_eq"|"private"|"protected"|"public"|"register"|"reinterpret_cast"|"requires"|"return"|"sizeof"|"static"|"static_assert"|"static_cast"|"struct"|"switch"|"synchronized"|"template"|"this"|"thread_local"|"throw"|"true"|"try"|"typedef"|"typeid"|"typename"|"union"|"using"|"virtual"|"void"|"volatile"|"while"|"xor"|"xor_eq"
 
 
 /*REGLAS*/
@@ -73,10 +68,10 @@ PRESERVADAS	"alignas"|"alignof"|"and"|"and_eq"|"asm"|"atomic_cancel"|"atomic_com
 {ASIGNA_VARIABLES}			{ string meter = yytext; manejarLocal(meter); cout << "asigna variables: " << meter << endl; meter.insert(meter.begin(), '\n');  EscribirFileaux(meter); }
 {BUCLES_IF}					{ string meter = yytext; quitarEspaciosFunciones(meter); cout << "bucle if: " << meter << endl; meterTabuladores(meter); meter.insert(meter.begin(), '\n'); comment_caller= YYSTATE; BEGIN SIN_LLAVES; ContadorLlaves++; EscribirFileaux(meter); }
 {BUCLES_FOR}					{ string meter = yytext; quitarEspaciosFunciones(meter); cout << "bucle FOR: " << meter << endl; meterTabuladores(meter); meter.insert(meter.begin(), '\n'); comment_caller= YYSTATE; BEGIN SIN_LLAVES; ContadorLlaves++; EscribirFileaux(meter); }
-{ELSE}						{ string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); meter.insert(meter.begin(), '\n'); comment_caller= YYSTATE; BEGIN SIN_LLAVES; ContadorLlaves++; EscribirFileaux(meter); }
-{BREAK}						{ string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter);  meter.insert(meter.begin(), '\n'); ContadorLlaves--; EscribirFileaux(meter); }
+{ELSE}						{ string meter = yytext; quitarEspaciosFunciones(meter);  meterTabuladores(meter); meter.insert(meter.begin(), '\n'); comment_caller= YYSTATE; BEGIN SIN_LLAVES; ContadorLlaves++; EscribirFileaux(meter); }
+{BREAK}						{ string meter = yytext; quitarEspaciosFunciones(meter); cout << "break: " << meter << endl; meterTabuladores(meter);  meter.insert(meter.begin(), '\n'); ContadorLlaves--; EscribirFileaux(meter); }
 {SWITCH}					{ string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); meter.insert(meter.begin(), '\n'); comment_caller= YYSTATE; ContadorLlaves++; EscribirFileaux(meter); }
-{CASE}						{ string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); meter.insert(meter.begin(), '\n'); comment_caller= YYSTATE; ContadorLlaves++; EscribirFileaux(meter); }
+{CASE}						{ string meter = yytext; quitarEspaciosFunciones(meter); cout << "case: " << meter << endl; meterTabuladores(meter); meter.insert(meter.begin(), '\n'); comment_caller= YYSTATE; ContadorLlaves++; EscribirFileaux(meter); }
 {FUNCIONES}					{ string meter = yytext; quitarEspaciosFunciones(meter); cout << "funciones: " << meter << endl<< endl;meterTabuladores(meter); meter.insert(meter.begin(), '\n');  ContadorLlaves++; EscribirFileaux(meter); }
 {LLAMADAS_FUNCIONES}		{ string meter = yytext; quitarEspaciosFunciones(meter); cout << "llamada_funcion: " << meter << endl; meterTabuladores(meter); meter.insert(meter.begin(), '\n'); EscribirFileaux(meter); }
 {CASOS_ESPECIALES}			{ BEGIN comment_caller; string meter = yytext; quitarEspaciosFunciones(meter);cout << "especial: " << meter << endl; meterTabuladores(meter); meter.insert(meter.begin(), '\n'); EscribirFileaux(meter); }

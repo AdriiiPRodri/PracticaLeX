@@ -79,10 +79,9 @@ bool Ocultar(unsigned char imagen[], const char mensaje[]){
         a cero. Esto sirve para comprobar mas adelante si se llega a contar 8 ceros seguidos y acabar de
         revelar el mensaje.
         */
-        if(!bit_imagen)
-            j++;
+        if(!bit_imagen)j++;
         else
-            j= 0;
+        j= 0;
 
         /*Cada 8 vueltas se introduce el char formado al mensaje, se aumenta k(indice del vector imagen) y el octeto a construir se hace cero.*/
         if(i%8 == 0 && i!=0){

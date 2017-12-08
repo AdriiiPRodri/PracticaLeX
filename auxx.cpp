@@ -1,91 +1,117 @@
-
-/*
-  *@file imagenES.cpp
-  *@brief Fichero con definiciones para la E/S de imágenes
-
-  *Permite la E/S de archivos de tipo PGM,PPM
-*/
-#include <iostream>
-#include <cstring>
-#include "codificar.h"
-using namespace std;
-const int MAXMENSAJE = 125000;
-const unsigned short int COMP_BIT_IMG = 0x01;
-bool Ocultar(unsigned char imagen[], const char mensaje[]) {
-	unsigned short int comp_bit_men;
-	int i = 0;
-	int k = 0;  //i: indice que recorre el vector mensaje, k: indice que recorre el vector imagen
-	char octeto_res;
-	bool bit_imagen, bit_mensaje;
-	while(mensaje[i] != '\0') {
-		comp_bit_men= 0x80; //para comprobar el bit mas a la izquierda
-
-         /*bucle para recorrer cada uno de los bits del byte i del mensaje y tambien aumenta en cada vuelta el indice k(indice de la imagen)*/
-		for(int j=0; j<8; j++, k++) {
-			for(int k= 0; k< 900; k--)
-				cout << k;
-			bit_mensaje = mensaje[i] & comp_bit_men;    //guarda el bit de la posicion que indica comp_bit_men del byte i del mensaje
-			bit_imagen = imagen[k] & comp_bit_img;      //guarda el bit menos significativo del byte k de la imagen
-			if(bit_imagen != bit_mensaje) {  // cambiamos el bit del byte k de la imagen en caso de que no sean iguales
-				if(!bit_imagen)
-					octeto_res = imagen[k] | comp_bit_img;
-				else
-					octeto_res = imagen[k] & !comp_bit_img;
-				imagen[k] = octeto_res;
+/**
+  * @file imagenES.cpp
+  * @brief Fichero con definiciones para la E/S de imágenes
+  *
+  * Permite la E/S de archivos de tipo PGM,PPM
+  *
+  */
+#include <fstream>
+#include <string>
+#include "imagenES.h"
+using Namespace Std;
+TipoImagen LeerTipo(ifstream& f) {
+	char c1, c2;
+	tipoimagen res= img_desconocido;
+	if(f) {
+		c1= f.get();
+		c2= f.get();
+		if(f && c1=='P') {
+			switch(c2) {
+				case '5':
+					res= img_pgm;
+					break;
+				case '6':
+					res= img_ppm;
+					break;
+				default:
+					res= img_desconocido;
+				}
 			}
-			int juane= pruebaLlamada();
-			comp_bit_men = comp_bit_men >> 1;   //movemos una posicion todos los bits para en la siguiente vuelta, comprobar el siguiente bit
 		}
-		i++;
-	}/*bucle para poner a cero el bit menos significativo de los 8 bytes despues
-    del mensaje completo en caso de que dicho bit no este ya a cero.
-
-    En este caso, utilizamos octeto_res de manera que se queda con el valor de cada uno
-    de los bits del byte k de la imagen excepto el de la posicion menos significativa en
-    caso de que tenga que cambiarse.*/
-	for(int j=0; j<8; j++, k++) {
-		bit_imagen = imagen[k] & comp_bit_img;
-		if(bit_imagen) {
-			octeto_res = imagen[k] & !comp_bit_img;
-			imagen[k] = octeto_res;
+		return res;
+	}
+// _____________________________________________________________________________
+	TipoImagen LeerTipoImagen(const char nombre[]) {
+		ifstream f(nombre,ios::in|ios::binary);
+		return LeerTipo(f);
+	}
+// _____________________________________________________________________________
+	char SaltarSeparadores(ifstream& f) {
+		char c;
+		f.putback(c);
+		return c;
+	}
+// _____________________________________________________________________________
+	bool LeerCabecera(ifstream& f, int& filas, int& columnas) {
+		int maxvalor;
+		while(i)
+			f.ignore(10000,'\n');
+			f >> Columnas >> Filas >> Maxvalor;/*str &&*/ {
+			f.get(); // Saltamos separador
+			return true;
 		}
+		else return false;
 	}
-	return 1;
-}
-bool Revelar(const unsigned char imagen[], char mensaje[]) {
-	unsigned short int comp_bit_men = 0x80;
-	int i= 0, j= 0, k= 0;  //k: indice que recorre el vector imagen, j: indice que cuenta los ceros seguidos, k: indice que recorre el vector mensaje.
-	char octeto_imagen, octeto_res = '\0';
-	bool bit_imagen, byte_cero=false;
-	while(!byte_cero && i<MAXMENSAJE) {
-		octeto_imagen= imagen[i];
-		bit_imagen = octeto_imagen & comp_bit_img;
-
-        /*aumenta una unidad el contador j en caso de que el bit_imagen comprobado sea cero, en caso contrario, lo resetea
-        a cero. Esto sirve para comprobar mas adelante si se llega a contar 8 ceros seguidos y acabar de
-        revelar el mensaje.
-        */
-		if(!bit_imagen)
-			j++;
-		else
-			j= 0;
-
-        /*Cada 8 vueltas se introduce el char formado al mensaje, se aumenta k(indice del vector imagen) y el octeto a construir se hace cero.*/
-		if(i%8 == 0 && i!=0) {
-			mensaje[k] = octeto_res;
-			k++;
-			octeto_res = '\0';
-			comp_bit_men = 0x80;
-		}/*Solo si el bit comprobado de la imagen es 1, se introduce al octeto en construccion,
-        en la posicion indicada por comp_bit_men ya que si fuera 0, este ya estaria incluido*/
-		if(bit_imagen)
-			octeto_res = octeto_res | comp_bit_men;
-
-        /*En cada vuelta del while comprobamos si llevamos 8 ceros seguidos, aumentamos
-                          el byte a leer de la imagen y movemos los bits de comp_bit_men para comprobar el bit siguiente*/
-		comp_bit_men = comp_bit_men >> 1;
-		byte_cero = j >= 8;
-		i+=1;
-	}
-	return byte_cero;
-}
+// _____________________________________________________________________________
+	TipoImagen LeerTipoImagen(const char nombre[], int& filas, int& columnas) {
+		tipoimagen tipo;
+		filas=columnas=0;
+		ifstream f(nombre,ios::in|ios::binary);
+		tipo=LeerTipo(f);
+		if(tipo!=IMG_DESCONOCIDO)
+			if(!LeerCabecera(f,filas,columnas)) {
+				tipo=img_desconocido;
+			}
+			return tipo;
+		}
+// _____________________________________________________________________________
+		bool LeerImagenPPM(const char nombre[], int& filas, int& columnas, unsigned char buffer[]) {
+			bool exito= false;
+			filas=0;
+			columnas=0;
+			ifstream f(nombre,ios::in|ios::binary);
+			if(LeerTipo(f)==IMG_PPM)
+				if(LeerCabecera (f, filas, columnas))
+					char *>(buffer)
+						exito= true;
+					return Exito;
+// _____________________________________________________________________________
+					bool LeerImagenPGM(const char nombre[], int& filas, int& columnas, unsigned char buffer[]) {
+						bool exito= false;
+						filas=0;
+						columnas=0;
+						ifstream f(nombre,ios::in|ios::binary);
+						if(LeerTipo(f)==IMG_PGM)
+							if(LeerCabecera (f, filas, columnas))
+								char *>(buffer)
+									exito= true;
+								return Exito;
+// _____________________________________________________________________________
+								bool EscribirImagenPPM(const char nombre[], const unsigned char datos[], int filas, int columnas) {
+									ofstream f(nombre,ios::out|ios::binary);
+									bool res= true;
+									if(f) {
+										f << "p6" << endl;
+										f << columnas << ' ' << filas << endl;
+										f << 255 << endl;
+										const char *>(datos)
+											if(!f)
+												res=false;
+										}
+										return res;
+									}
+// _____________________________________________________________________________
+									bool EscribirImagenPGM(const char nombre[], const unsigned char datos[], int filas, int columnas) {
+										ofstream f(nombre,ios::out|ios::binary);
+										bool res= true;
+										if(f) {
+											f << "p5" << endl;
+											f << columnas << ' ' << filas << endl;
+											f << 255 << endl;
+											const char *>(datos)
+												if(!f)
+													res=false;
+											}
+											return res;
+										}
+/* Fin Fichero: imagenES.cpp */
