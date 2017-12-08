@@ -1,3 +1,6 @@
+switch
+artista
+
 /**
   * @file imagenES.cpp
   * @brief Fichero con definiciones para la E/S de imágenes
@@ -25,10 +28,13 @@ int main(){
 
     switch (caracola) {
         case this->value:
-          int a;
+          if(false)
+            cout << "prueba" << std::endl;
+
           break;
-        case that->value:
-          if ola == that->value
+        case 5:
+          if(true)
+            cout << "prueba";
           break;
         case 1:
         if(LeerTipoImagen(nom_img_in, filas, columnas) == IMG_PGM){
@@ -43,17 +49,36 @@ int main(){
             else
                 error_lectura = true;
         }
-        else if(LeerTipoImagen(nom_img_in, filas, columnas) == IMG_PPM){
+        else
+
+
+
+        if(LeerTipoImagen(nom_img_in, filas, columnas) == IMG_PPM){
+
+
+
             if(LeerImagenPPM(nom_img_in, filas, columnas, buffer)){
+
+
+
                 if(Revelar(buffer, mensaje)){
+
+
+
                     cout << "Revelando.." << endl;
                     cout << "El mensaje obtenido es: " << endl << mensaje << endl;
                 }
+
+
+
                 else
                     error_terminador = true;
+
+
             }
-            else
-                error_lectura = true;
+
+
+            else                error_lectura = true;
         }
         else
             error_formato = true;

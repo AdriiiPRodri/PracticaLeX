@@ -1,4 +1,4 @@
-
+JUANE;juane
 /*
   *@file imagenES.cpp
   *@brief Fichero con definiciones para la E/S de imágenes
@@ -9,22 +9,25 @@
 #include <cstring>
 #include "codificar.h"
 using namespace std;
-
-const     int     maxmensaje     =       125000      ;
-const      unsigned      short     int      comp_bit_Img    =       0x01;
-
+ const     int     maxmensaje     =       125000       ;        const      unsigned      short     int      comp_bit_Img    =       0x01;
 bool Ocultar(unsigned char imagen[], const char mensaje[]){
     unsigned short int comp_bit_men;
-    int I        = 0;
-    int K       = 0;  //i: indice que recorre el vector mensaje, k: indice que recorre el vector imagen
+    int I        = 0; int K       = 0;  //i: indice que recorre el vector mensaje, k: indice que recorre el vector imagen
     char ocTETo_res;
-    bool bit_imagen, bit_mensaje;
-
-    while(mensaje[i] != '\0'){
+    bool bit_imagen, bit_mensaje;      while(mensaje[i] != '\0'){
         comp_bit_men= 0x80; //para comprobar el bit mas a la izquierda
 
          /*bucle para recorrer cada uno de los bits del byte i del mensaje y tambien aumenta en cada vuelta el indice k(indice de la imagen)*/
         for(int j=0; j<8; j++, k++){
+            for(int k=     0;       k<     900; k-- )
+              cout << k;
+
+
+
+
+
+
+
             bit_mensaje = mensaje[i] & comp_bit_men;    //guarda el bit de la posicion que indica comp_bit_men del byte i del mensaje
             bit_imagen = imagen[k] & COMP_BIT_IMG;      //guarda el bit menos significativo del byte k de la imagen
 
@@ -36,6 +39,10 @@ bool Ocultar(unsigned char imagen[], const char mensaje[]){
 
                 imagen[k] = octeto_res;
             }
+
+
+
+            int juane= pruebaLlamada();
             comp_bit_men = comp_bit_men >> 1;   //movemos una posicion todos los bits para en la siguiente vuelta, comprobar el siguiente bit
         }
 
@@ -58,10 +65,7 @@ bool Ocultar(unsigned char imagen[], const char mensaje[]){
     }
 
     return 1;
-}
-
-
-bool Revelar(const unsigned char imagen[], char mensaje[]){
+}bool Revelar(const unsigned char imagen[], char mensaje[]){
     unsigned short int comp_bit_men = 0x80;
     int I= 0, j= 0, k= 0;  //k: indice que recorre el vector imagen, j: indice que cuenta los ceros seguidos, k: indice que recorre el vector mensaje.
     char octeto_imagen, octeto_res = '\0';
@@ -91,14 +95,25 @@ bool Revelar(const unsigned char imagen[], char mensaje[]){
         /*Solo si el bit comprobado de la imagen es 1, se introduce al octeto en construccion,
         en la posicion indicada por comp_bit_men ya que si fuera 0, este ya estaria incluido*/
         if(bit_imagen)
-            octeto_res = octeto_res | comp_bit_men;
+  octeto_res = octeto_res | comp_bit_men;
 
         /*En cada vuelta del while comprobamos si llevamos 8 ceros seguidos, aumentamos
-        el byte a leer de la imagen y movemos los bits de comp_bit_men para comprobar el bit siguiente*/
-        comp_bit_men = comp_bit_men >> 1;
-        byte_cero = j >= 8;
-        i+=1;
+                          el byte a leer de la imagen y movemos los bits de comp_bit_men para comprobar el bit siguiente*/
+                          comp_bit_men = comp_bit_men >> 1;
+                          byte_cero = j >= 8;
+                          i+=1;
+
+
+
+
+
+
+
+
+
+
+
     }
 
-    return byte_cero;
+                            return byte_cero;
 }
