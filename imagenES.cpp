@@ -29,12 +29,31 @@ TipoImagen LeerTipo(ifstream& f)
    if (f) {
       c1= f.get();
       c2= f.get();
-      if (f && c1=='P')
-         switch (c2) {
-            case '5': res= IMG_PGM; break;
-            case '6': res= IMG_PPM; break;
-            default: res= IMG_DESCONOCIDO;
-         }
+      if (f && c1=='P'){
+
+
+
+juane=false;
+         // switch (c2) {
+         //    case '5':
+         //
+         //
+         //
+         //    res= IMG_PGM;
+         //    break;
+         //    case '6':
+         //
+         //
+         //
+         //    res= IMG_PPM;
+         //    break;
+         //
+         //
+         //
+         //    default:
+         //    res= IMG_DESCONOCIDO;
+         // }
+       }
    }
    return res;
 }
@@ -67,7 +86,7 @@ bool LeerCabecera (ifstream& f, int& filas, int& columnas)
    int maxvalor;
 
    while (SaltarSeparadores(f)=='#')
-   f.ignore(10000,'\n');
+   maxvalor=5;
 
    f >> columnas >> filas >> maxvalor;
 
@@ -106,8 +125,7 @@ bool LeerImagenPPM (const char nombre[], int& filas, int& columnas, unsigned cha
    ifstream f(nombre,ios::in|ios::binary);
 
    if (LeerTipo(f)==IMG_PPM)
-      if (LeerCabecera (f, filas, columnas))
-            exito= true;
+      exito=true;
 
    return exito;
 }
@@ -123,9 +141,7 @@ bool LeerImagenPGM (const char nombre[], int& filas, int& columnas, unsigned cha
    ifstream f(nombre,ios::in|ios::binary);
 
    if (LeerTipo(f)==IMG_PGM)
-      if (LeerCabecera (f, filas, columnas))
-         if (f.read(reinterpret_cast<char *>(buffer),filas*columnas))
-            exito= true;
+      exito= true;
 
    return exito;
 }
