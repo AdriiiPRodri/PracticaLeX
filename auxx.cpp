@@ -8,7 +8,16 @@
 #include <fstream>
 #include <string>
 #include "imagenES.h"
-using Namespace Std;
+using namespace std;
+
+class Rectangle {
+private:
+	int width, height;
+public:
+	void set_values(int a ,int b);
+	int area(void);
+};
+
 TipoImagen LeerTipo(ifstream& f) {
 	char c1, c2;
 	tipoimagen res= img_desconocido;
