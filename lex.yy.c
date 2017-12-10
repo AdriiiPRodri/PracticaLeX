@@ -66834,6 +66834,7 @@ using namespace std;
 fstream os;
 int ContadorLlaves;
 int comment_caller;
+int guarda_tabs;
 
 void EscribirFileaux(const string &una_cadena);
 void quitarEspacios(string &cadena);
@@ -66847,7 +66848,7 @@ void quitarEPrimeroUltimo(string & cadena);
 /*ALIAS*/
 
 /*REGLAS*/
-#line 66851 "lex.yy.c"
+#line 66852 "lex.yy.c"
 
 #define INITIAL 0
 #define LOCAL 1
@@ -67069,10 +67070,10 @@ YY_DECL
 		}
 
 	{
-#line 54 "plant.l"
+#line 55 "plant.l"
 
 
-#line 67076 "lex.yy.c"
+#line 67077 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -67132,207 +67133,207 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 56 "plant.l"
+#line 57 "plant.l"
 { string meter = yytext; EscribirFileaux(meter); comment_caller= YYSTATE; BEGIN COMENT_LARGO;}
 	YY_BREAK
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
-#line 57 "plant.l"
+#line 58 "plant.l"
 { EscribirFileaux(yytext); }
 	YY_BREAK
 case 3:
 /* rule 3 can match eol */
 YY_RULE_SETUP
-#line 58 "plant.l"
+#line 59 "plant.l"
 { EscribirFileaux(yytext); }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 59 "plant.l"
+#line 60 "plant.l"
 { EscribirFileaux(yytext); BEGIN(comment_caller); }
 	YY_BREAK
 case 5:
 /* rule 5 can match eol */
 YY_RULE_SETUP
-#line 60 "plant.l"
+#line 61 "plant.l"
 { string meter = yytext; quitarEspacios(meter); meter.insert(meter.begin(), '\n'); EscribirFileaux(yytext); }
 	YY_BREAK
 case 6:
 /* rule 6 can match eol */
 YY_RULE_SETUP
-#line 61 "plant.l"
+#line 62 "plant.l"
 { comment_caller= YYSTATE;    EscribirFileaux(yytext);  BEGIN COMENT_SHORT;}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 62 "plant.l"
+#line 63 "plant.l"
 { BEGIN comment_caller; EscribirFileaux(yytext);}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 63 "plant.l"
+#line 64 "plant.l"
 { string meter = yytext; quitarEspacios(meter); EscribirFileaux(meter); }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 64 "plant.l"
+#line 65 "plant.l"
 { EscribirFileaux("\n#endif\n"); }
 	YY_BREAK
 case 10:
 /* rule 10 can match eol */
 YY_RULE_SETUP
-#line 65 "plant.l"
+#line 66 "plant.l"
 { string meter = yytext; quitarEspacios(meter); meter.insert(meter.begin(), '\n'); EscribirFileaux(meter); }
 	YY_BREAK
 case 11:
 /* rule 11 can match eol */
 YY_RULE_SETUP
-#line 66 "plant.l"
+#line 67 "plant.l"
 { string meter = yytext; manejarVariableGlobal(meter); cout << "var CONST: " << meter << endl;meter.insert(meter.begin(), '\n'); EscribirFileaux(meter); }
 	YY_BREAK
 case 12:
 /* rule 12 can match eol */
 YY_RULE_SETUP
-#line 67 "plant.l"
+#line 68 "plant.l"
 { string meter = yytext; manejarLocal(meter); cout << "local variables: " << meter << endl;meter.insert(meter.begin(), '\n'); EscribirFileaux(meter); }
 	YY_BREAK
 case 13:
 /* rule 13 can match eol */
 YY_RULE_SETUP
-#line 68 "plant.l"
+#line 69 "plant.l"
 { string meter = yytext; manejarGlobal(meter); cout << "variables: " << meter << endl; meter.insert(meter.begin(), '\n'); EscribirFileaux(meter); }
 	YY_BREAK
 case 14:
 /* rule 14 can match eol */
 YY_RULE_SETUP
-#line 69 "plant.l"
-{BEGIN comment_caller; string meter = yytext; manejarLocal(meter); ContadorLlaves--;  meter.insert(meter.begin(), '\n'); EscribirFileaux(meter);}
+#line 70 "plant.l"
+{BEGIN comment_caller; string meter = yytext; manejarLocal(meter); ContadorLlaves=guarda_tabs;  meter.insert(meter.begin(), '\n'); EscribirFileaux(meter);}
 	YY_BREAK
 case 15:
 /* rule 15 can match eol */
 YY_RULE_SETUP
-#line 70 "plant.l"
+#line 71 "plant.l"
 {  string meter = yytext; manejarLocal(meter); meter.insert(meter.begin(), '\n');  EscribirFileaux(meter);}
 	YY_BREAK
 case 16:
 /* rule 16 can match eol */
 YY_RULE_SETUP
-#line 71 "plant.l"
-{ BEGIN comment_caller; string meter = yytext; manejarLocal(meter); cout << "asigna sin llaves: " << meter << endl; meter.insert(meter.begin(), '\n'); ContadorLlaves--; EscribirFileaux(meter); }
+#line 72 "plant.l"
+{ BEGIN comment_caller; string meter = yytext; manejarLocal(meter); cout << "asigna sin llaves: " << meter << endl; meter.insert(meter.begin(), '\n'); ContadorLlaves=guarda_tabs; EscribirFileaux(meter); }
 	YY_BREAK
 case 17:
 /* rule 17 can match eol */
 YY_RULE_SETUP
-#line 72 "plant.l"
+#line 73 "plant.l"
 { string meter = yytext; manejarLocal(meter); cout << "asigna variables: " << meter << endl; meter.insert(meter.begin(), '\n');  EscribirFileaux(meter); }
 	YY_BREAK
 case 18:
 /* rule 18 can match eol */
 YY_RULE_SETUP
-#line 73 "plant.l"
-{ string meter = yytext; quitarEspaciosFunciones(meter); cout << "bucle if: " << meter << endl; meterTabuladores(meter); meter.insert(meter.begin(), '\n'); comment_caller= YYSTATE; BEGIN SIN_LLAVES; ContadorLlaves++; EscribirFileaux(meter); }
+#line 74 "plant.l"
+{ string meter = yytext; quitarEspaciosFunciones(meter); cout << "bucle if: " << meter << endl; meterTabuladores(meter); meter.insert(meter.begin(), '\n'); if(YYSTATE != SIN_LLAVES){ comment_caller= YYSTATE; guarda_tabs= ContadorLlaves;} BEGIN SIN_LLAVES; ContadorLlaves++; EscribirFileaux(meter); }
 	YY_BREAK
 case 19:
 /* rule 19 can match eol */
 YY_RULE_SETUP
-#line 74 "plant.l"
-{ string meter = yytext; quitarEspaciosFunciones(meter); cout << "bucle FOR: " << meter << endl; meterTabuladores(meter); meter.insert(meter.begin(), '\n'); comment_caller= YYSTATE; BEGIN SIN_LLAVES; ContadorLlaves++; EscribirFileaux(meter); }
+#line 75 "plant.l"
+{ string meter = yytext; quitarEspaciosFunciones(meter); cout << "bucle FOR: " << meter << endl; meterTabuladores(meter); meter.insert(meter.begin(), '\n'); if(YYSTATE != SIN_LLAVES){ comment_caller= YYSTATE; guarda_tabs= ContadorLlaves;} BEGIN SIN_LLAVES; ContadorLlaves++; EscribirFileaux(meter); }
 	YY_BREAK
 case 20:
 /* rule 20 can match eol */
 YY_RULE_SETUP
-#line 75 "plant.l"
-{ string meter = yytext; quitarEspaciosFunciones(meter);  meterTabuladores(meter); meter.insert(meter.begin(), '\n'); comment_caller= YYSTATE; BEGIN SIN_LLAVES; ContadorLlaves++; EscribirFileaux(meter); }
+#line 76 "plant.l"
+{ string meter = yytext; quitarEspaciosFunciones(meter);  meterTabuladores(meter); meter.insert(meter.begin(), '\n'); if(YYSTATE != SIN_LLAVES){ comment_caller= YYSTATE; guarda_tabs= ContadorLlaves;} BEGIN SIN_LLAVES; ContadorLlaves++; EscribirFileaux(meter); }
 	YY_BREAK
 case 21:
 /* rule 21 can match eol */
 YY_RULE_SETUP
-#line 76 "plant.l"
+#line 77 "plant.l"
 { string meter = yytext; quitarEspaciosFunciones(meter); cout << "break: " << meter << endl; meterTabuladores(meter);  meter.insert(meter.begin(), '\n'); ContadorLlaves--; EscribirFileaux(meter); }
 	YY_BREAK
 case 22:
 /* rule 22 can match eol */
 YY_RULE_SETUP
-#line 77 "plant.l"
-{ string meter = yytext; quitarEspaciosFunciones(meter); cout << "switch: " << meter << endl; meterTabuladores(meter); meter.insert(meter.begin(), '\n'); comment_caller= YYSTATE; ContadorLlaves++; EscribirFileaux(meter); }
+#line 78 "plant.l"
+{ string meter = yytext; quitarEspaciosFunciones(meter); cout << "switch: " << meter << endl; meterTabuladores(meter); meter.insert(meter.begin(), '\n'); if(YYSTATE != SIN_LLAVES){ comment_caller= YYSTATE; guarda_tabs= ContadorLlaves;} ContadorLlaves++; EscribirFileaux(meter); }
 	YY_BREAK
 case 23:
 /* rule 23 can match eol */
 YY_RULE_SETUP
-#line 78 "plant.l"
-{ string meter = yytext; quitarEspaciosFunciones(meter); cout << "case: " << meter << endl; meterTabuladores(meter); meter.insert(meter.begin(), '\n'); comment_caller= YYSTATE; ContadorLlaves++; EscribirFileaux(meter); }
+#line 79 "plant.l"
+{ string meter = yytext; quitarEspaciosFunciones(meter); cout << "case: " << meter << endl; meterTabuladores(meter); meter.insert(meter.begin(), '\n'); if(YYSTATE != SIN_LLAVES){ comment_caller= YYSTATE; guarda_tabs= ContadorLlaves;} ContadorLlaves++; EscribirFileaux(meter); }
 	YY_BREAK
 case 24:
 /* rule 24 can match eol */
 YY_RULE_SETUP
-#line 79 "plant.l"
+#line 80 "plant.l"
 { string meter = yytext; quitarEspaciosFunciones(meter); cout << "funciones: " << meter << endl<< endl;meterTabuladores(meter); meter.insert(meter.begin(), '\n');  ContadorLlaves++; EscribirFileaux(meter); }
 	YY_BREAK
 case 25:
 /* rule 25 can match eol */
 YY_RULE_SETUP
-#line 80 "plant.l"
+#line 81 "plant.l"
 { string meter = yytext; quitarEspaciosFunciones(meter); cout << "llamada_funcion: " << meter << endl; meterTabuladores(meter); meter.insert(meter.begin(), '\n'); EscribirFileaux(meter); }
 	YY_BREAK
 case 26:
 /* rule 26 can match eol */
 YY_RULE_SETUP
-#line 81 "plant.l"
-{ BEGIN comment_caller; string meter = yytext; quitarEspaciosFunciones(meter);cout << "especial: " << meter << endl; meterTabuladores(meter); meter.insert(meter.begin(), '\n'); ContadorLlaves--; EscribirFileaux(meter); }
+#line 82 "plant.l"
+{ BEGIN comment_caller; string meter = yytext; quitarEspaciosFunciones(meter);cout << "especial: " << meter << endl; meterTabuladores(meter); meter.insert(meter.begin(), '\n'); ContadorLlaves=guarda_tabs; EscribirFileaux(meter); }
 	YY_BREAK
 case 27:
 /* rule 27 can match eol */
 YY_RULE_SETUP
-#line 82 "plant.l"
+#line 83 "plant.l"
 {string meter = yytext; quitarEspaciosFunciones(meter);cout << "especial: " << meter << endl; meterTabuladores(meter); meter.insert(meter.begin(), '\n'); EscribirFileaux(meter); }
 	YY_BREAK
 case 28:
 /* rule 28 can match eol */
 YY_RULE_SETUP
-#line 83 "plant.l"
-{ string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); meter.insert(meter.begin(), '\n'); meter.insert(meter.begin(), '\n'); comment_caller= YYSTATE; BEGIN LOCAL; ContadorLlaves++; EscribirFileaux(meter); }
+#line 84 "plant.l"
+{ string meter = yytext; quitarEspaciosFunciones(meter); meterTabuladores(meter); meter.insert(meter.begin(), '\n'); meter.insert(meter.begin(), '\n'); if(YYSTATE != SIN_LLAVES){ comment_caller= YYSTATE; guarda_tabs= ContadorLlaves;} BEGIN LOCAL; ContadorLlaves++; EscribirFileaux(meter); }
 	YY_BREAK
 case 29:
 /* rule 29 can match eol */
 YY_RULE_SETUP
-#line 84 "plant.l"
+#line 85 "plant.l"
 { string meter = yytext; quitarEspacios(meter); meter.insert(meter.begin(), '\n'); EscribirFileaux(meter); }
 	YY_BREAK
 case 30:
 /* rule 30 can match eol */
 YY_RULE_SETUP
-#line 85 "plant.l"
+#line 86 "plant.l"
 { string meter = yytext; quitarEspacios(meter); meter.insert(meter.begin(), '\n'); EscribirFileaux(meter); }
 	YY_BREAK
 case 31:
 /* rule 31 can match eol */
 YY_RULE_SETUP
-#line 86 "plant.l"
+#line 87 "plant.l"
 { EscribirFileaux(" {"); BEGIN LOCAL; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 87 "plant.l"
+#line 88 "plant.l"
 { ContadorLlaves--; string meter; meterTabuladores(meter); meter.insert(meter.begin(), '\n'); meter += "}"; EscribirFileaux(meter); if(ContadorLlaves == 0) BEGIN comment_caller; }
 	YY_BREAK
 case 33:
 /* rule 33 can match eol */
 YY_RULE_SETUP
-#line 88 "plant.l"
+#line 89 "plant.l"
 { ContadorLlaves--; string meter; meterTabuladores(meter); meter.insert(meter.begin(), '\n'); meter += "};\n"; EscribirFileaux(meter); if(ContadorLlaves == 0) BEGIN comment_caller; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 89 "plant.l"
+#line 90 "plant.l"
 { ; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 91 "plant.l"
+#line 92 "plant.l"
 ECHO;
 	YY_BREAK
-#line 67336 "lex.yy.c"
+#line 67337 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(LOCAL):
 case YY_STATE_EOF(SIN_LLAVES):
@@ -68337,7 +68338,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 91 "plant.l"
+#line 92 "plant.l"
 
 
 

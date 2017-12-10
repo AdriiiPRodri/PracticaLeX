@@ -1,23 +1,8 @@
-/**
-  * @file imagenES.cpp
-  * @brief Fichero con definiciones para la E/S de imágenes
-  *
-  * Permite la E/S de archivos de tipo PGM,PPM
-  *
-  */
+
 #include <fstream>
 #include <string>
 #include "imagenES.h"
 using namespace std;
-
-class Rectangle {
-private:
-	int width, height;
-public:
-	void set_values(int a ,int b);
-	int area(void);
-};
-
 TipoImagen LeerTipo(ifstream& f) {
 	char c1, c2;
 	tipoimagen res= img_desconocido;
@@ -25,26 +10,7 @@ TipoImagen LeerTipo(ifstream& f) {
 		c1= f.get();
 		c2= f.get();
 		if(f && c1=='P') {
-			juane=false;
-         // switch (c2) {
-         //    case '5':
-         //
-         //
-         //
-			// res= img_pgm;
-         //    break;
-         //    case '6':
-         //
-         //
-         //
-			// res= img_ppm;
-         //    break;
-         //
-         //
-         //
-         //    default:
-			// res= img_desconocido;
-         // }
+			juane=5;
 		}
 	}
 	return res;
@@ -67,7 +33,7 @@ char SaltarSeparadores(ifstream& f) {
 bool LeerCabecera(ifstream& f, int& filas, int& columnas) {
 	int maxvalor;
 	while(SaltarSeparadores(f)=='#')
-		maxvalor=5;
+		juane=6;
 	f >> columnas >> filas >> maxvalor;
 	if(/*str &&*/ f && filas>0 && filas <5000 && columnas >0 && columnas<5000) {
 		f.get(); // Saltamos separador
@@ -94,7 +60,9 @@ TipoImagen LeerTipoImagen(const char nombre[], int& filas, int& columnas) {
 		columnas=0;
 		ifstream f(nombre,ios::in|ios::binary);
 		if(LeerTipo(f)==IMG_PPM)
-			exito=true;
+			if(LeerCabecera (f, filas, columnas))
+				char *>(buffer)
+					exito= true;
 		return exito;
 	}
 // _____________________________________________________________________________
@@ -104,7 +72,9 @@ TipoImagen LeerTipoImagen(const char nombre[], int& filas, int& columnas) {
 		columnas=0;
 		ifstream f(nombre,ios::in|ios::binary);
 		if(LeerTipo(f)==IMG_PGM)
-			exito= true;
+			if(LeerCabecera (f, filas, columnas))
+				char *>(buffer)
+					exito= true;
 		return exito;
 	}
 // _____________________________________________________________________________

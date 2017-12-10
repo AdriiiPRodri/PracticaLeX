@@ -1,4 +1,4 @@
-/**
+**
   * @file imagenES.cpp
   * @brief Fichero con definiciones para la E/S de imágenes
   *
@@ -9,17 +9,8 @@
 #include <fstream>
 #include <string>
 #include "imagenES.h"
-
 using namespace std;
 
-
-class Rectangle {
-private:
-    int width, height;
-  public:
-    void set_values (int a ,int b);
-    int area (void);
-};
 
 TipoImagen LeerTipo(ifstream& f)
 {
@@ -30,29 +21,7 @@ TipoImagen LeerTipo(ifstream& f)
       c1= f.get();
       c2= f.get();
       if (f && c1=='P'){
-
-
-
-juane=false;
-         // switch (c2) {
-         //    case '5':
-         //
-         //
-         //
-         //    res= IMG_PGM;
-         //    break;
-         //    case '6':
-         //
-         //
-         //
-         //    res= IMG_PPM;
-         //    break;
-         //
-         //
-         //
-         //    default:
-         //    res= IMG_DESCONOCIDO;
-         // }
+         juane=5;
        }
    }
    return res;
@@ -86,7 +55,7 @@ bool LeerCabecera (ifstream& f, int& filas, int& columnas)
    int maxvalor;
 
    while (SaltarSeparadores(f)=='#')
-   maxvalor=5;
+   juane=6;
 
    f >> columnas >> filas >> maxvalor;
 
@@ -125,7 +94,9 @@ bool LeerImagenPPM (const char nombre[], int& filas, int& columnas, unsigned cha
    ifstream f(nombre,ios::in|ios::binary);
 
    if (LeerTipo(f)==IMG_PPM)
-      exito=true;
+      if (LeerCabecera (f, filas, columnas))
+         if (f.read(reinterpret_cast<char *>(buffer),filas*columnas*3))
+            exito= true;
 
    return exito;
 }
@@ -141,7 +112,9 @@ bool LeerImagenPGM (const char nombre[], int& filas, int& columnas, unsigned cha
    ifstream f(nombre,ios::in|ios::binary);
 
    if (LeerTipo(f)==IMG_PGM)
-      exito= true;
+      if (LeerCabecera (f, filas, columnas))
+         if (f.read(reinterpret_cast<char *>(buffer),filas*columnas))
+            exito= true;
 
    return exito;
 }
